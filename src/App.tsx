@@ -18,6 +18,11 @@ import { ImmigrationReportDetail } from './pages/ImmigrationReportDetail';
 import { PathwaySubmissionDetail } from './pages/PathwaySubmissionDetail';
 import { ConsultationDetail } from './pages/ConsultationDetail';
 import { ComingSoon } from './pages/ComingSoon';
+import { Company } from './pages/Company';
+import { AboutUs } from './pages/AboutUs';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfService } from './pages/TermsOfService';
+import { Contact } from './pages/Contact';
 import { trackPageView } from './utils/analytics';
 
 function AppContent() {
@@ -123,42 +128,11 @@ function AppContent() {
                   />
                 }
               />
-              <Route
-                path="/about"
-                element={
-                  <ComingSoon
-                    title="About Us"
-                    description="Learn more about our mission to help newcomers succeed in Canada."
-                  />
-                }
-              />
-              <Route
-                path="/contact"
-                element={
-                  <ComingSoon
-                    title="Contact Us"
-                    description="Get in touch with our team for questions and support."
-                  />
-                }
-              />
-              <Route
-                path="/privacy"
-                element={
-                  <ComingSoon
-                    title="Privacy Policy"
-                    description="Learn how we protect your personal information and respect your privacy."
-                  />
-                }
-              />
-              <Route
-                path="/terms"
-                element={
-                  <ComingSoon
-                    title="Terms of Service"
-                    description="Read our terms of service and user agreement."
-                  />
-                }
-              />
+              <Route path="/company" element={<Company />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
             </Routes>
           </main>
           {!isAdminRoute && <Footer />}
