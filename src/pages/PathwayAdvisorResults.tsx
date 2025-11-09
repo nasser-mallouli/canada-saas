@@ -90,7 +90,7 @@ export function PathwayAdvisorResults() {
             and maximize your chances of success.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/information-session">
+            <Link to="/consultation">
               <Button size="lg" variant="secondary">
                 Book Consultation
                 <ArrowRight className="w-5 h-5 ml-2" />

@@ -541,7 +541,7 @@ export function ServicesMarketplace() {
             special discounts, and priority booking with verified providers.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/information-session">
+            <Link to="/consultation">
               <Button size="lg" variant="secondary">
                 Book Pre-Launch Consultation
                 <ArrowRight className="w-5 h-5 ml-2" />

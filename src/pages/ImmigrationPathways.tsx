@@ -195,7 +195,7 @@ export function ImmigrationPathways() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Link to="/information-session">
+            <Link to="/consultation">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary-600">
                 Book Consultation
                 <Users className="w-5 h-5 ml-2" />
@@ -415,7 +415,7 @@ export function ImmigrationPathways() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Link to="/information-session">
+            <Link to="/consultation">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary-900">
                 Book Free Consultation
               </Button>

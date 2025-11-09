@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { CRSInputData } from '../../types';
 import { calculateCRS } from '../../utils/crsCalculator';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../lib/api';
+import { trackCalculatorStep } from '../../utils/calculatorSession';
 import { AgeStep } from './steps/AgeStep';
 import { EducationStep } from './steps/EducationStep';
 import { LanguageStep } from './steps/LanguageStep';
@@ -15,6 +16,8 @@ import { AdditionalPointsStep } from './steps/AdditionalPointsStep';
 interface CRSWizardProps {
   userInfo: { fullName: string; email: string; phone: string };
   onComplete: (data: CRSInputData, score: number) => void;
+  initialData?: Partial<CRSInputData> | null;
+  calculationId?: string;
 }
 
 const steps = [
@@ -26,7 +29,7 @@ const steps = [
   { id: 'additional', title: 'Additional Points', description: 'Extra qualifying factors' },
 ];
 
-export function CRSWizard({ userInfo, onComplete }: CRSWizardProps) {
+export function CRSWizard({ userInfo, onComplete, initialData, calculationId }: CRSWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<CRSInputData>>({
     age: 25,
@@ -40,14 +43,61 @@ export function CRSWizard({ userInfo, onComplete }: CRSWizardProps) {
     provincialNomination: false,
     hasJobOffer: false,
     hasSiblingInCanada: false,
+    ...initialData, // Merge initial data if provided
   });
+
+  // Restore step if we have initial data
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      // Determine which step to show based on what data we have
+      if (initialData.additionalPoints !== undefined) {
+        setCurrentStep(5); // Additional points step
+      } else if (initialData.hasSpouse !== undefined || initialData.spouseData) {
+        setCurrentStep(4); // Spouse step
+      } else if (initialData.canadianWorkExperience || initialData.foreignWorkExperience) {
+        setCurrentStep(3); // Work experience step
+      } else if (initialData.firstLanguage || initialData.secondLanguage) {
+        setCurrentStep(2); // Language step
+      } else if (initialData.education) {
+        setCurrentStep(1); // Education step
+      } else if (initialData.age) {
+        setCurrentStep(0); // Age step
+      }
+    }
+  }, [initialData]);
 
   const updateFormData = (data: Partial<CRSInputData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
 
-  const handleNext = () => {
+  // Track step progress when step changes (not on every form data change to avoid excessive API calls)
+  useEffect(() => {
+    const stepId = steps[currentStep].id;
+    const completedSteps = steps.slice(0, currentStep).map(s => s.id);
+    
+    // Track current step with partial data (debounced by step change only)
+    trackCalculatorStep(
+      stepId,
+      completedSteps,
+      formData,
+      userInfo
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]); // Only track when step changes, not on every form data update
+
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
+      // Track step completion before moving to next
+      const completedStepId = steps[currentStep].id;
+      const completedSteps = steps.slice(0, currentStep + 1).map(s => s.id);
+      
+      await trackCalculatorStep(
+        steps[currentStep + 1].id, // Next step
+        completedSteps,
+        formData,
+        userInfo
+      );
+      
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
@@ -77,7 +127,7 @@ export function CRSWizard({ userInfo, onComplete }: CRSWizardProps) {
     const { score, breakdown } = calculateCRS(completeData);
 
     try {
-      await supabase.from('crs_calculations').insert({
+      await api.post('/api/crs/calculate', {
         score,
         category_breakdown: breakdown,
         input_data: {
@@ -90,6 +140,16 @@ export function CRSWizard({ userInfo, onComplete }: CRSWizardProps) {
     } catch (error) {
       console.error('Error saving calculation:', error);
     }
+
+    // Mark session as completed
+    const allSteps = steps.map(s => s.id);
+    await trackCalculatorStep(
+      'completed',
+      allSteps,
+      completeData,
+      userInfo,
+      true // is_completed
+    );
 
     onComplete(completeData, score);
   };

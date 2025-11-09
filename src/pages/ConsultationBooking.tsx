@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 const CONSULTATION_TYPES = [
   { value: 'general', label: 'General Immigration Inquiry', emoji: '📋' },
@@ -48,12 +48,7 @@ export function ConsultationBooking() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('consultation_requests')
-        .insert([formData]);
-
-      if (error) throw error;
-
+      await api.post('/api/consultation/request', formData, { skipAuth: true });
       setSubmitted(true);
     } catch (error) {
       console.error('Error submitting consultation request:', error);

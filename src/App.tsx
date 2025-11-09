@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
@@ -12,11 +13,24 @@ import { PathwayAdvisorResults } from './pages/PathwayAdvisorResults';
 import { ConsultationBooking } from './pages/ConsultationBooking';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { CRSCalculationDetail } from './pages/CRSCalculationDetail';
+import { ImmigrationReportDetail } from './pages/ImmigrationReportDetail';
+import { PathwaySubmissionDetail } from './pages/PathwaySubmissionDetail';
+import { ConsultationDetail } from './pages/ConsultationDetail';
 import { ComingSoon } from './pages/ComingSoon';
+import { trackPageView } from './utils/analytics';
 
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  // Track page views on route change
+  useEffect(() => {
+    // Don't track admin routes
+    if (!isAdminRoute) {
+      trackPageView(location.pathname, document.title);
+    }
+  }, [location.pathname, isAdminRoute]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -25,6 +39,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/calculator" element={<Calculator />} />
+            <Route path="/calculator/:id" element={<Calculator />} />
           <Route path="/pathways" element={<ImmigrationPathways />} />
           <Route path="/pathway-advisor" element={<PathwayAdvisor />} />
           <Route path="/pathway-advisor/results" element={<PathwayAdvisorResults />} />
@@ -35,6 +50,38 @@ function AppContent() {
             element={
               <ProtectedRoute requireAdmin>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/calculation/:id"
+            element={
+              <ProtectedRoute requireAdmin>
+                <CRSCalculationDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/report/:id"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ImmigrationReportDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/pathway-submission/:id"
+            element={
+              <ProtectedRoute requireAdmin>
+                <PathwaySubmissionDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/consultation/:id"
+            element={
+              <ProtectedRoute requireAdmin>
+                <ConsultationDetail />
               </ProtectedRoute>
             }
           />

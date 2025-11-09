@@ -1,11 +1,13 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
+import { trackButtonClick } from '../../utils/analytics';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   children: ReactNode;
+  trackClick?: boolean; // Whether to track this button click
 }
 
 export function Button({
@@ -15,8 +17,20 @@ export function Button({
   children,
   className = '',
   disabled,
+  trackClick = true, // Track clicks by default
+  onClick,
   ...props
 }: ButtonProps) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (trackClick && !disabled && !loading) {
+      // Extract button label from children
+      const buttonLabel = typeof children === 'string' 
+        ? children 
+        : (e.currentTarget.textContent || 'Button');
+      trackButtonClick(buttonLabel);
+    }
+    onClick?.(e);
+  };
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
@@ -36,6 +50,7 @@ export function Button({
     <button
       className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       disabled={disabled || loading}
+      onClick={handleClick}
       {...props}
     >
       {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

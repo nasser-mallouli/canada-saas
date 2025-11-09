@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  Users, Calculator, TrendingUp, LogOut, Mail, Phone, Calendar,
-  MousePointerClick, Eye, FileText, MessageSquare, BarChart3,
-  Activity, DollarSign, Target
+  Users, Calculator, LogOut, MessageSquare, BarChart3, Activity, FileText, Route
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
+import { Overview } from '../components/admin/overview/Overview';
+import { Calculations } from '../components/admin/calculations/Calculations';
+import { PathwayAdvisor } from '../components/admin/pathway-advisor/PathwayAdvisor';
+import { Consultations } from '../components/admin/consultations/Consultations';
+import { Analytics } from '../components/admin/analytics/Analytics';
+import { Users as UsersComponent } from '../components/admin/users/Users';
+import { Reports } from '../components/admin/reports/Reports';
 
 interface DashboardStats {
   totalPageViews: number;
@@ -18,87 +21,104 @@ interface DashboardStats {
   avgCRSScore: number;
   totalConsultations: number;
   totalPathwaySubmissions: number;
+  totalImmigrationReports?: number;
   recentCalculations: any[];
   recentConsultations: any[];
+  recentReports?: any[];
+  recentPathwaySubmissions?: any[];
   recentPageViews: any[];
   topPages: { page: string; count: number }[];
   topButtons: { button: string; count: number }[];
 }
 
 export function AdminDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'calculations' | 'consultations' | 'analytics'>('overview');
+  const tabFromUrl = searchParams.get('tab') as 'overview' | 'calculations' | 'pathway-advisor' | 'consultations' | 'analytics' | 'users' | 'reports' | null;
+  const [activeTab, setActiveTab] = useState<'overview' | 'calculations' | 'pathway-advisor' | 'consultations' | 'analytics' | 'users' | 'reports'>(
+    tabFromUrl || 'overview'
+  );
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(false);
   const { signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Update activeTab when URL changes (e.g., when navigating back)
+  useEffect(() => {
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabFromUrl]);
+
+  // Update URL when tab changes (but not on initial load)
+  const handleTabChange = (tab: 'overview' | 'calculations' | 'pathway-advisor' | 'consultations' | 'analytics' | 'users' | 'reports') => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
 
-      const [
-        pageViewsResult,
-        clicksResult,
-        crsResult,
-        consultationsResult,
-        pathwayResult,
-        recentPageViewsResult,
-      ] = await Promise.all([
-        supabase.from('page_views').select('*', { count: 'exact' }),
-        supabase.from('button_clicks').select('*', { count: 'exact' }),
-        supabase.from('crs_calculations_detailed').select('*').order('created_at', { ascending: false }),
-        supabase.from('consultation_requests').select('*').order('created_at', { ascending: false }),
-        supabase.from('pathway_advisor_submissions').select('*', { count: 'exact' }),
-        supabase.from('page_views').select('page_path').order('created_at', { ascending: false }).limit(100),
-      ]);
-
-      const crsData = crsResult.data || [];
-      const avgScore = crsData.length > 0
-        ? Math.round(crsData.reduce((sum, calc) => sum + calc.crs_score, 0) / crsData.length)
-        : 0;
-
-      const pageViewCounts = (recentPageViewsResult.data || []).reduce((acc: any, view) => {
-        acc[view.page_path] = (acc[view.page_path] || 0) + 1;
-        return acc;
-      }, {});
-
-      const topPages = Object.entries(pageViewCounts)
-        .map(([page, count]) => ({ page, count: count as number }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-      const buttonClicksData = clicksResult.data || [];
-      const buttonCounts = buttonClicksData.reduce((acc: any, click) => {
-        acc[click.button_label] = (acc[click.button_label] || 0) + 1;
-        return acc;
-      }, {});
-
-      const topButtons = Object.entries(buttonCounts)
-        .map(([button, count]) => ({ button, count: count as number }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
+      const dashboardData = await api.get('/api/analytics/dashboard');
 
       setStats({
-        totalPageViews: pageViewsResult.count || 0,
-        totalClicks: clicksResult.count || 0,
-        totalCRSCalculations: crsData.length,
-        avgCRSScore: avgScore,
-        totalConsultations: consultationsResult.data?.length || 0,
-        totalPathwaySubmissions: pathwayResult.count || 0,
-        recentCalculations: crsData.slice(0, 10),
-        recentConsultations: consultationsResult.data?.slice(0, 10) || [],
-        recentPageViews: recentPageViewsResult.data || [],
-        topPages,
-        topButtons,
+        totalPageViews: dashboardData.totalPageViews || 0,
+        totalClicks: dashboardData.totalClicks || 0,
+        totalCRSCalculations: dashboardData.totalCRSCalculations || 0,
+        avgCRSScore: dashboardData.avgCRSScore || 0,
+        totalConsultations: dashboardData.totalConsultations || 0,
+        totalPathwaySubmissions: dashboardData.totalPathwaySubmissions || 0,
+        totalImmigrationReports: dashboardData.totalImmigrationReports || 0,
+        recentCalculations: dashboardData.recentCalculations || [],
+        recentConsultations: dashboardData.recentConsultations || [],
+        recentReports: dashboardData.recentReports || [],
+        recentPathwaySubmissions: dashboardData.recentPathwaySubmissions || [],
+        recentPageViews: [],
+        topPages: dashboardData.topPages || [],
+        topButtons: dashboardData.topButtons || [],
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setUserLoading(true);
+      const usersData = await api.get('/api/admin/users');
+      setUsers(usersData || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
+  const fetchUserDetail = async (userId: number) => {
+    try {
+      setUserLoading(true);
+      const userDetail = await api.get(`/api/admin/users/${userId}`);
+      setSelectedUser(userDetail);
+    } catch (error) {
+      console.error('Error fetching user detail:', error);
+    } finally {
+      setUserLoading(false);
     }
   };
 
@@ -149,7 +169,7 @@ export function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-secondary-200 p-2 mb-8">
           <div className="flex gap-2 overflow-x-auto">
             <button
-              onClick={() => setActiveTab('overview')}
+              onClick={() => handleTabChange('overview')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === 'overview'
                   ? 'bg-primary-600 text-white shadow-md'
@@ -160,7 +180,7 @@ export function AdminDashboard() {
               Overview
             </button>
             <button
-              onClick={() => setActiveTab('calculations')}
+              onClick={() => handleTabChange('calculations')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === 'calculations'
                   ? 'bg-primary-600 text-white shadow-md'
@@ -171,7 +191,18 @@ export function AdminDashboard() {
               CRS Calculations
             </button>
             <button
-              onClick={() => setActiveTab('consultations')}
+              onClick={() => handleTabChange('pathway-advisor')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+                activeTab === 'pathway-advisor'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'text-secondary-600 hover:bg-secondary-50'
+              }`}
+            >
+              <Route className="w-4 h-4" />
+              Pathway Advisor
+            </button>
+            <button
+              onClick={() => handleTabChange('consultations')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === 'consultations'
                   ? 'bg-primary-600 text-white shadow-md'
@@ -182,7 +213,7 @@ export function AdminDashboard() {
               Consultations
             </button>
             <button
-              onClick={() => setActiveTab('analytics')}
+              onClick={() => handleTabChange('analytics')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === 'analytics'
                   ? 'bg-primary-600 text-white shadow-md'
@@ -192,266 +223,54 @@ export function AdminDashboard() {
               <Activity className="w-4 h-4" />
               Analytics
             </button>
+            <button
+              onClick={() => handleTabChange('users')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+                activeTab === 'users'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'text-secondary-600 hover:bg-secondary-50'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              Users
+            </button>
+            <button
+              onClick={() => handleTabChange('reports')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+                activeTab === 'reports'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'text-secondary-600 hover:bg-secondary-50'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              AI Reports
+            </button>
           </div>
         </div>
 
-        {activeTab === 'overview' && stats && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-primary-700 mb-1">Total Page Views</p>
-                    <p className="text-3xl font-bold text-primary-900">{stats.totalPageViews}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center">
-                    <Eye className="w-6 h-6 text-primary-700" />
-                  </div>
-                </div>
-              </Card>
+        {activeTab === 'overview' && stats && <Overview stats={stats} />}
 
-              <Card className="bg-gradient-to-br from-success-50 to-success-100 border-success-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-success-700 mb-1">Button Clicks</p>
-                    <p className="text-3xl font-bold text-success-900">{stats.totalClicks}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-success-200 rounded-full flex items-center justify-center">
-                    <MousePointerClick className="w-6 h-6 text-success-700" />
-                  </div>
-                </div>
-              </Card>
+        {activeTab === 'calculations' && stats && <Calculations stats={stats} />}
 
-              <Card className="bg-gradient-to-br from-info-50 to-info-100 border-info-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-info-700 mb-1">CRS Calculations</p>
-                    <p className="text-3xl font-bold text-info-900">{stats.totalCRSCalculations}</p>
-                    <p className="text-xs text-info-600">Avg: {stats.avgCRSScore} pts</p>
-                  </div>
-                  <div className="w-12 h-12 bg-info-200 rounded-full flex items-center justify-center">
-                    <Calculator className="w-6 h-6 text-info-700" />
-                  </div>
-                </div>
-              </Card>
+        {activeTab === 'pathway-advisor' && stats && <PathwayAdvisor stats={stats} />}
 
-              <Card className="bg-gradient-to-br from-warning-50 to-warning-100 border-warning-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-warning-700 mb-1">Consultations</p>
-                    <p className="text-3xl font-bold text-warning-900">{stats.totalConsultations}</p>
-                  </div>
-                  <div className="w-12 h-12 bg-warning-200 rounded-full flex items-center justify-center">
-                    <MessageSquare className="w-6 h-6 text-warning-700" />
-                  </div>
-                </div>
-              </Card>
-            </div>
+        {activeTab === 'consultations' && stats && <Consultations stats={stats} />}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <h3 className="text-lg font-bold text-secondary-900 mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-primary-600" />
-                  Top Pages
-                </h3>
-                <div className="space-y-3">
-                  {stats.topPages.map((page, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-secondary-900">{page.page}</div>
-                        <div className="w-full bg-secondary-200 rounded-full h-2 mt-1">
-                          <div
-                            className="bg-primary-600 h-2 rounded-full"
-                            style={{ width: `${(page.count / stats.topPages[0].count) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="ml-4 text-lg font-bold text-primary-600">{page.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+        {activeTab === 'analytics' && stats && <Analytics stats={stats} />}
 
-              <Card>
-                <h3 className="text-lg font-bold text-secondary-900 mb-4 flex items-center gap-2">
-                  <MousePointerClick className="w-5 h-5 text-success-600" />
-                  Top Button Clicks
-                </h3>
-                <div className="space-y-3">
-                  {stats.topButtons.map((button, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-secondary-900">{button.button}</div>
-                        <div className="w-full bg-secondary-200 rounded-full h-2 mt-1">
-                          <div
-                            className="bg-success-600 h-2 rounded-full"
-                            style={{ width: `${(button.count / stats.topButtons[0].count) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="ml-4 text-lg font-bold text-success-600">{button.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          </div>
-        )}
+        {activeTab === 'reports' && stats && <Reports stats={stats} />}
 
-        {activeTab === 'calculations' && stats && (
-          <div className="space-y-6">
-            <Card>
-              <h3 className="text-xl font-bold text-secondary-900 mb-6">Recent CRS Calculations</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-secondary-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Score</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Age</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Education</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Details</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-secondary-200">
-                    {stats.recentCalculations.map((calc) => (
-                      <tr key={calc.id} className="hover:bg-secondary-50">
-                        <td className="px-4 py-3 text-sm text-secondary-900">
-                          {new Date(calc.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-medium text-secondary-900">{calc.user_name}</td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">{calc.user_email}</td>
-                        <td className="px-4 py-3">
-                          <Badge variant={calc.crs_score >= 500 ? 'success' : calc.crs_score >= 450 ? 'warning' : 'error'}>
-                            {calc.crs_score} pts
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">{calc.input_data?.age}</td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">
-                          {calc.input_data?.education?.replace(/_/g, ' ')}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              alert(JSON.stringify(calc, null, 2));
-                            }}
-                          >
-                            View
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'consultations' && stats && (
-          <div className="space-y-6">
-            <Card>
-              <h3 className="text-xl font-bold text-secondary-900 mb-6">Consultation Requests</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-secondary-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Email</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Phone</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Type</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Date & Time</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-secondary-200">
-                    {stats.recentConsultations.map((consult) => (
-                      <tr key={consult.id} className="hover:bg-secondary-50">
-                        <td className="px-4 py-3 text-sm text-secondary-900">
-                          {new Date(consult.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-medium text-secondary-900">{consult.user_name}</td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">{consult.user_email}</td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">{consult.user_phone || 'N/A'}</td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">
-                          {consult.consultation_type?.replace(/-/g, ' ')}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-secondary-600">
-                          {new Date(consult.preferred_date).toLocaleDateString()} {consult.preferred_time}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant={consult.status === 'pending' ? 'warning' : 'success'}>
-                            {consult.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'analytics' && stats && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-gradient-to-br from-primary-50 to-primary-100">
-                <Target className="w-8 h-8 text-primary-600 mb-3" />
-                <p className="text-sm text-primary-700 mb-1">Conversion Rate</p>
-                <p className="text-3xl font-bold text-primary-900">
-                  {stats.totalPageViews > 0
-                    ? ((stats.totalCRSCalculations / stats.totalPageViews) * 100).toFixed(1)
-                    : 0}%
-                </p>
-                <p className="text-xs text-primary-600 mt-1">Visitors to Calculator</p>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-success-50 to-success-100">
-                <Activity className="w-8 h-8 text-success-600 mb-3" />
-                <p className="text-sm text-success-700 mb-1">Engagement Rate</p>
-                <p className="text-3xl font-bold text-success-900">
-                  {stats.totalPageViews > 0
-                    ? ((stats.totalClicks / stats.totalPageViews) * 100).toFixed(1)
-                    : 0}%
-                </p>
-                <p className="text-xs text-success-600 mt-1">Clicks per View</p>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-warning-50 to-warning-100">
-                <DollarSign className="w-8 h-8 text-warning-600 mb-3" />
-                <p className="text-sm text-warning-700 mb-1">Consultation Rate</p>
-                <p className="text-3xl font-bold text-warning-900">
-                  {stats.totalCRSCalculations > 0
-                    ? ((stats.totalConsultations / stats.totalCRSCalculations) * 100).toFixed(1)
-                    : 0}%
-                </p>
-                <p className="text-xs text-warning-600 mt-1">Calculator to Consultation</p>
-              </Card>
-            </div>
-
-            <Card>
-              <h3 className="text-lg font-bold text-secondary-900 mb-4">CRS Score Distribution</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { range: '0-449', color: 'error', count: stats.recentCalculations.filter(c => c.crs_score < 450).length },
-                  { range: '450-499', color: 'warning', count: stats.recentCalculations.filter(c => c.crs_score >= 450 && c.crs_score < 500).length },
-                  { range: '500-549', color: 'info', count: stats.recentCalculations.filter(c => c.crs_score >= 500 && c.crs_score < 550).length },
-                  { range: '550+', color: 'success', count: stats.recentCalculations.filter(c => c.crs_score >= 550).length },
-                ].map((bucket) => (
-                  <div key={bucket.range} className="text-center p-4 bg-secondary-50 rounded-lg">
-                    <p className="text-2xl font-bold text-secondary-900">{bucket.count}</p>
-                    <p className="text-sm text-secondary-600">{bucket.range} points</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
+        {activeTab === 'users' && (
+          <UsersComponent
+            users={users}
+            selectedUser={selectedUser}
+            userLoading={userLoading}
+            onUserSelect={fetchUserDetail}
+            onBack={() => {
+              setSelectedUser(null);
+              fetchUsers();
+            }}
+          />
         )}
       </div>
     </div>

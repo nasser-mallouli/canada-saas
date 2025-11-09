@@ -3,6 +3,7 @@ import { UserCircle, Mail, Phone, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
+import { trackCalculatorStep } from '../../utils/calculatorSession';
 
 interface UserInfoStepProps {
   onComplete: (info: { fullName: string; email: string; phone: string }) => void;
@@ -37,9 +38,16 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      // Track user info step completion
+      await trackCalculatorStep(
+        'user-info',
+        ['user-info'],
+        { fullName, email, phone },
+        { fullName, email, phone }
+      );
       onComplete({ fullName, email, phone });
     }
   };

@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
@@ -24,10 +24,14 @@ export function AdminLogin() {
 
     try {
       const { error } = await signIn(email, password);
-      if (error) throw error;
+      if (error) {
+        setError(error.message || 'Invalid email or password');
+        return;
+      }
       navigate('/admin/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      const errorMessage = err?.message || err?.response?.data?.detail || 'Invalid email or password';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -39,27 +43,28 @@ export function AdminLogin() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      // Use create-admin endpoint to create admin user
+      const response = await api.post('/api/auth/create-admin', {
         email,
         password,
-        options: {
-          data: {
-            role: 'admin'
-          }
-        }
-      });
+        full_name: email.split('@')[0], // Use email prefix as name
+      }, { skipAuth: true });
 
-      if (error) throw error;
-
-      if (data.user) {
-        setSignupSuccess(true);
-        setShowSignup(false);
-        setTimeout(() => {
-          navigate('/admin/dashboard');
-        }, 1500);
+      // Auto-login after admin creation
+      if (response.access && response.refresh) {
+        localStorage.setItem('access_token', response.access);
+        localStorage.setItem('refresh_token', response.refresh);
       }
+
+      setSignupSuccess(true);
+      setShowSignup(false);
+      
+      // Refresh auth context and navigate
+      setTimeout(() => {
+        window.location.href = '/admin/dashboard';
+      }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Failed to create admin account');
+      setError(err.response?.data?.detail || err.message || 'Failed to create admin account');
     } finally {
       setLoading(false);
     }

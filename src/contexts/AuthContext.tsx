@@ -1,12 +1,18 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { UserProfile } from '../types';
+
+interface User {
+  id: number;
+  email: string;
+  username: string;
+  is_active: boolean;
+  date_joined: string;
+}
 
 interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
-  session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -19,61 +25,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    checkAuth();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const checkAuth = async () => {
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const userMetadata = userData?.user?.user_metadata;
-      const isAdmin = userMetadata?.role === 'admin';
-
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (isAdmin) {
-        setProfile({
-          id: userId,
-          full_name: userMetadata?.full_name || 'Admin',
-          role: 'admin',
-          created_at: userData?.user?.created_at || new Date().toISOString(),
-        });
-      } else {
-        if (error && error.code !== 'PGRST116') throw error;
-        setProfile(data);
-      }
+      const data = await api.get<{ user: User; profile: UserProfile | null }>('/api/auth/me');
+      setUser(data.user);
+      setProfile(data.profile);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      // Not authenticated
+      setUser(null);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
@@ -81,23 +47,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const response = await api.post<{
+        user: User;
+        profile: UserProfile;
+        access: string;
+        refresh: string;
+      }>('/api/auth/register', {
         email,
         password,
-      });
+        full_name: fullName,
+      }, { skipAuth: true });
 
-      if (authError) throw authError;
-
-      if (authData.user) {
-        const { error: profileError } = await supabase.from('user_profiles').insert({
-          id: authData.user.id,
-          full_name: fullName,
-          role: 'user',
-        });
-
-        if (profileError) throw profileError;
-      }
-
+      api.setTokens(response.access, response.refresh);
+      setUser(response.user);
+      setProfile(response.profile);
       return { error: null };
     } catch (error) {
       return { error: error as Error };
@@ -106,34 +69,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const response = await api.post<{
+        user: User;
+        profile: UserProfile;
+        access: string;
+        refresh: string;
+      }>('/api/auth/login', {
         email,
         password,
-      });
+      }, { skipAuth: true });
 
-      if (error) throw error;
+      api.setTokens(response.access, response.refresh);
+      setUser(response.user);
+      setProfile(response.profile);
       return { error: null };
-    } catch (error) {
-      return { error: error as Error };
+    } catch (error: any) {
+      // Extract error message from Django Ninja response format
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Login failed';
+      return { error: new Error(errorMessage) };
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      const tokens = api.getTokens();
+      if (tokens.refresh) {
+        await api.post('/api/auth/token/blacklist/', { refresh: tokens.refresh }, { skipAuth: true });
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      api.clearTokens();
+      setUser(null);
+      setProfile(null);
+    }
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     try {
       if (!user) throw new Error('No user logged in');
 
-      const { error } = await supabase
-        .from('user_profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      setProfile((prev) => (prev ? { ...prev, ...updates } : null));
+      const updatedProfile = await api.patch<UserProfile>('/api/profile/', updates);
+      setProfile(updatedProfile);
       return { error: null };
     } catch (error) {
       return { error: error as Error };
@@ -143,7 +120,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     profile,
-    session,
     loading,
     signUp,
     signIn,

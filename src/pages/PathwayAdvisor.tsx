@@ -6,7 +6,7 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { Autocomplete } from '../components/ui/Autocomplete';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { evaluateAllPathways, PathwayAdvisorData } from '../utils/pathwayEligibility';
 import {
   COUNTRIES,
@@ -23,6 +23,7 @@ export function PathwayAdvisor() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<PathwayAdvisorData>>({
     userName: '',
@@ -59,36 +60,94 @@ export function PathwayAdvisor() {
     }));
   };
 
+  // Save partial submission when user clicks Next
+  const savePartialSubmission = async (nextStep: number) => {
+    try {
+      const stepNames = ['contact', 'goal', 'basic-info', 'education-work', 'language', 'circumstances', 'pathway-specific'];
+      // nextStep is the step they're moving to (0-indexed)
+      const currentStepName = stepNames[nextStep] || 'contact';
+      
+      const payload = {
+        submission_id: submissionId,
+        user_name: formData.userName || '',
+        user_email: formData.userEmail || '',
+        user_phone: formData.userPhone || '',
+        birth_date: formData.birthDate || '',
+        citizenship_country: formData.citizenshipCountry || '',
+        residence_country: formData.residenceCountry || '',
+        education_level: formData.educationLevel || '',
+        work_experience_years: formData.workExperienceYears || 0,
+        field_of_study: formData.fieldOfStudy || '',
+        language_tests: formData.languageTests || [],
+        marital_status: formData.maritalStatus || '',
+        has_canadian_relative: formData.hasCanadianRelative || false,
+        has_job_offer: formData.hasJobOffer || false,
+        has_canadian_experience: formData.hasCanadianExperience || false,
+        has_police_record: formData.hasPoliceRecord || false,
+        available_funds: formData.availableFunds || 0,
+        pathway_goal: formData.pathwayGoal || '',
+        pathway_specific_data: formData.pathwaySpecificData || {},
+        eligibility_results: {},
+        current_step: currentStepName,
+        is_completed: false,
+      };
+
+      const response = await api.post('/api/pathway/submit', payload, { skipAuth: true });
+      
+      // Store the submission ID for future updates (always update in case it changed)
+      if (response?.id) {
+        setSubmissionId(response.id);
+      }
+    } catch (error) {
+      // Silently fail - don't interrupt user flow
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error saving partial submission:', error);
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       const results = evaluateAllPathways(formData as PathwayAdvisorData);
 
-      const { error } = await supabase
-        .from('pathway_advisor_submissions')
-        .insert({
-          user_name: formData.userName,
-          user_email: formData.userEmail,
-          user_phone: formData.userPhone,
-          birth_date: formData.birthDate,
-          citizenship_country: formData.citizenshipCountry,
-          residence_country: formData.residenceCountry,
-          education_level: formData.educationLevel,
-          work_experience_years: formData.workExperienceYears,
-          field_of_study: formData.fieldOfStudy,
-          language_tests: formData.languageTests,
-          marital_status: formData.maritalStatus,
-          has_canadian_relative: formData.hasCanadianRelative,
-          has_job_offer: formData.hasJobOffer,
-          has_canadian_experience: formData.hasCanadianExperience,
-          has_police_record: formData.hasPoliceRecord,
-          available_funds: formData.availableFunds,
-          pathway_goal: formData.pathwayGoal,
-          pathway_specific_data: formData.pathwaySpecificData,
-          eligibility_results: results
-        });
+      // Convert results array to dict format for backend storage
+      const eligibilityResultsDict: Record<string, any> = {};
+      results.forEach((result) => {
+        eligibilityResultsDict[result.pathway] = {
+          pathway: result.pathway,
+          readinessScore: result.readinessScore,
+          eligible: result.eligible,
+          missingRequirements: result.missingRequirements,
+          recommendations: result.recommendations,
+          details: result.details,
+        };
+      });
 
-      if (error) throw error;
+      await api.post('/api/pathway/submit', {
+        submission_id: submissionId,
+        user_name: formData.userName,
+        user_email: formData.userEmail,
+        user_phone: formData.userPhone,
+        birth_date: formData.birthDate,
+        citizenship_country: formData.citizenshipCountry,
+        residence_country: formData.residenceCountry,
+        education_level: formData.educationLevel,
+        work_experience_years: formData.workExperienceYears,
+        field_of_study: formData.fieldOfStudy,
+        language_tests: formData.languageTests,
+        marital_status: formData.maritalStatus,
+        has_canadian_relative: formData.hasCanadianRelative,
+        has_job_offer: formData.hasJobOffer,
+        has_canadian_experience: formData.hasCanadianExperience,
+        has_police_record: formData.hasPoliceRecord,
+        available_funds: formData.availableFunds,
+        pathway_goal: formData.pathwayGoal,
+        pathway_specific_data: formData.pathwaySpecificData,
+        eligibility_results: eligibilityResultsDict,
+        current_step: 'completed',
+        is_completed: true
+      }, { skipAuth: true });
 
       navigate('/pathway-advisor/results', { state: { results, formData } });
     } catch (error) {
@@ -178,7 +237,16 @@ export function PathwayAdvisor() {
           )}
           <div className="flex-1" />
           {step < totalSteps - 1 ? (
-            <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+            <Button 
+              onClick={async () => {
+                if (canProceed()) {
+                  // Save partial submission before moving to next step
+                  await savePartialSubmission(step + 1);
+                  setStep(step + 1);
+                }
+              }} 
+              disabled={!canProceed()}
+            >
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
