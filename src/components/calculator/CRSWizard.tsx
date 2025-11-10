@@ -12,6 +12,7 @@ import { LanguageStep } from './steps/LanguageStep';
 import { WorkExperienceStep } from './steps/WorkExperienceStep';
 import { SpouseStep } from './steps/SpouseStep';
 import { AdditionalPointsStep } from './steps/AdditionalPointsStep';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface CRSWizardProps {
   userInfo: { fullName: string; email: string; phone: string };
@@ -20,17 +21,18 @@ interface CRSWizardProps {
   calculationId?: string;
 }
 
-const steps = [
-  { id: 'age', title: 'Age', description: 'Your current age' },
-  { id: 'education', title: 'Education', description: 'Highest level of education' },
-  { id: 'language', title: 'Language', description: 'Official language proficiency' },
-  { id: 'work', title: 'Work Experience', description: 'Canadian work experience' },
-  { id: 'spouse', title: 'Spouse/Partner', description: 'Marital status and spouse details' },
-  { id: 'additional', title: 'Additional Points', description: 'Extra qualifying factors' },
-];
-
 export function CRSWizard({ userInfo, onComplete, initialData, calculationId }: CRSWizardProps) {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = [
+    { id: 'age', title: t('calculator.steps.age.title'), description: t('calculator.steps.age.description') },
+    { id: 'education', title: t('calculator.steps.education.title'), description: t('calculator.steps.education.description') },
+    { id: 'language', title: t('calculator.steps.language.title'), description: t('calculator.steps.language.description') },
+    { id: 'work', title: t('calculator.steps.work.title'), description: t('calculator.steps.work.description') },
+    { id: 'spouse', title: t('calculator.steps.spouse.title'), description: t('calculator.steps.spouse.description') },
+    { id: 'additional', title: t('calculator.steps.additional.title'), description: t('calculator.steps.additional.description') },
+  ];
   const [formData, setFormData] = useState<Partial<CRSInputData>>({
     age: 25,
     education: 'bachelor',
@@ -204,7 +206,7 @@ export function CRSWizard({ userInfo, onComplete, initialData, calculationId }: 
 
           <div className="text-center">
             <p className="text-sm text-secondary-500 mb-1">
-              Step {currentStep + 1} of {steps.length}
+              {t('calculator.steps.stepOf', { current: currentStep + 1, total: steps.length })}
             </p>
             <h2 className="text-2xl font-bold text-secondary-900">{steps[currentStep].title}</h2>
             <p className="text-secondary-600">{steps[currentStep].description}</p>
@@ -221,17 +223,17 @@ export function CRSWizard({ userInfo, onComplete, initialData, calculationId }: 
             className={currentStep === 0 ? 'invisible' : ''}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('common.buttons.back')}
           </Button>
           <Button onClick={handleNext}>
             {currentStep === steps.length - 1 ? (
               <>
-                Calculate Score
+                {t('calculator.steps.calculateScore')}
                 <Check className="w-4 h-4 ml-2" />
               </>
             ) : (
               <>
-                Next
+                {t('common.buttons.next')}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </>
             )}

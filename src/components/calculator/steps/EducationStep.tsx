@@ -1,28 +1,31 @@
 import { CRSInputData } from '../../../types';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 interface EducationStepProps {
   data: Partial<CRSInputData>;
   updateData: (data: Partial<CRSInputData>) => void;
 }
 
-const educationOptions = [
-  { value: 'less_than_secondary', label: 'Less than secondary school (high school)' },
-  { value: 'secondary', label: 'Secondary diploma (high school graduation)' },
-  { value: 'one_year_post_secondary', label: 'One-year post-secondary program' },
-  { value: 'two_year_post_secondary', label: 'Two-year post-secondary program' },
-  { value: 'bachelor', label: 'Bachelor\'s degree (3+ years)' },
-  { value: 'two_or_more_certificates', label: 'Two or more certificates, diplomas, or degrees' },
-  { value: 'master', label: 'Master\'s degree or professional degree' },
-  { value: 'phd', label: 'Doctoral level university degree (PhD)' },
-];
-
 export function EducationStep({ data, updateData }: EducationStepProps) {
+  const { t } = useTranslation();
+
+  const educationOptions = [
+    { value: 'less_than_secondary', label: t('calculator.steps.education.options.less_than_secondary') },
+    { value: 'secondary', label: t('calculator.steps.education.options.secondary') },
+    { value: 'one_year_post_secondary', label: t('calculator.steps.education.options.one_year_post_secondary') },
+    { value: 'two_year_post_secondary', label: t('calculator.steps.education.options.two_year_post_secondary') },
+    { value: 'bachelor', label: t('calculator.steps.education.options.bachelor') },
+    { value: 'two_or_more_certificates', label: t('calculator.steps.education.options.two_or_more_certificates') },
+    { value: 'master', label: t('calculator.steps.education.options.master') },
+    { value: 'phd', label: t('calculator.steps.education.options.phd') },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-secondary-900 mb-2">Level of Education</h3>
+        <h3 className="text-lg font-semibold text-secondary-900 mb-2">{t('calculator.steps.education.title')}</h3>
         <p className="text-secondary-600 mb-6">
-          Select your highest level of education. If you studied outside Canada, you'll need an Educational Credential Assessment (ECA).
+          {t('calculator.steps.education.subtitle')}
         </p>
 
         <div className="space-y-3">
@@ -51,7 +54,7 @@ export function EducationStep({ data, updateData }: EducationStepProps) {
 
       <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
         <p className="text-sm text-warning-900">
-          <strong>Important:</strong> If you completed your education outside Canada, you must have an Educational Credential Assessment (ECA) report from a designated organization.
+          <strong>{t('common.labels.warning')}:</strong> {t('calculator.steps.education.important')}
         </p>
       </div>
     </div>

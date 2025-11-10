@@ -1,0 +1,681 @@
+{
+  "common": {
+    "buttons": {
+      "back": "Retour",
+      "next": "Suivant",
+      "continue": "Continuer",
+      "submit": "Soumettre",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "close": "Fermer",
+      "download": "Télécharger",
+      "send": "Envoyer",
+      "search": "Rechercher",
+      "filter": "Filtrer",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer",
+      "calculate": "Calculer",
+      "startOver": "Recommencer",
+      "getStarted": "Commencer",
+      "learnMore": "En savoir plus",
+      "viewMore": "Voir plus",
+      "viewAll": "Voir tout",
+      "bookNow": "Réserver maintenant",
+      "contactUs": "Nous contacter"
+    },
+    "labels": {
+      "required": "Requis",
+      "optional": "Optionnel",
+      "loading": "Chargement...",
+      "error": "Erreur",
+      "success": "Succès",
+      "warning": "Avertissement",
+      "info": "Information",
+      "name": "Nom",
+      "email": "Courriel",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "date": "Date",
+      "time": "Heure",
+      "status": "Statut",
+      "actions": "Actions",
+      "yes": "Oui",
+      "no": "Non",
+      "none": "Aucun",
+      "all": "Tous",
+      "select": "Sélectionner",
+      "choose": "Choisir"
+    },
+    "errors": {
+      "required": "Ce champ est requis",
+      "invalidEmail": "Veuillez entrer une adresse courriel valide",
+      "invalidPhone": "Veuillez entrer un numéro de téléphone valide",
+      "generic": "Une erreur s'est produite. Veuillez réessayer.",
+      "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+      "notFound": "Non trouvé",
+      "unauthorized": "Accès non autorisé"
+    },
+    "success": {
+      "saved": "Enregistré avec succès",
+      "deleted": "Supprimé avec succès",
+      "sent": "Envoyé avec succès",
+      "updated": "Mis à jour avec succès"
+    }
+  },
+  "navigation": {
+    "brandName": "Immigration Canada",
+    "home": "Accueil",
+    "calculator": "Calculateur CRS",
+    "pathways": "Voies d'immigration",
+    "services": "Services",
+    "about": "À propos",
+    "contact": "Contact",
+    "company": "Entreprise",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "freeAssessment": "Évaluation gratuite",
+    "admin": "Admin",
+    "dashboard": "Tableau de bord",
+    "logout": "Déconnexion"
+  },
+  "calculator": {
+    "title": "Calculateur CRS",
+    "subtitle": "Calculez votre score du Système de classement complet",
+    "userInfo": {
+      "title": "Calculons votre score CRS",
+      "subtitle": "D'abord, nous avons besoin de quelques détails pour commencer. Vos informations sont sécurisées et ne seront utilisées que pour vous fournir vos résultats.",
+      "fullName": "Nom complet",
+      "email": "Adresse courriel",
+      "emailHelper": "Nous enverrons vos résultats à ce courriel",
+      "phone": "Numéro de téléphone",
+      "phoneHelper": "Inclure l'indicatif du pays si vous êtes à l'extérieur du Canada",
+      "continue": "Continuer vers le calculateur",
+      "agreement": "En continuant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité. Vos informations sont cryptées et sécurisées.",
+      "quickAssessment": "Évaluation rapide",
+      "irccAccurate": "Conforme IRCC",
+      "dataEncrypted": "Données cryptées",
+      "errors": {
+        "fullNameRequired": "Le nom complet est requis",
+        "emailRequired": "Le courriel est requis",
+        "phoneRequired": "Le numéro de téléphone est requis"
+      }
+    },
+    "steps": {
+      "age": {
+        "title": "Âge",
+        "description": "Votre âge actuel",
+        "question": "Quel est votre âge?",
+        "subtitle": "L'âge est l'un des facteurs les plus importants de votre score CRS. Les candidats plus jeunes reçoivent plus de points.",
+        "label": "Votre âge",
+        "helper": "Doit être entre 18 et 65 ans",
+        "pointsLabel": "Vos points pour l'âge",
+        "peakAge": "Âge optimal",
+        "peakAgeDesc": "20-29 ans = points maximum",
+        "pointsDecline": "Diminution des points",
+        "pointsDeclineDesc": "Après 30 ans, les points diminuent progressivement"
+      },
+      "education": {
+        "title": "Éducation",
+        "description": "Niveau d'éducation le plus élevé",
+        "subtitle": "Sélectionnez votre niveau d'éducation le plus élevé. Si vous avez étudié à l'extérieur du Canada, vous aurez besoin d'une Évaluation des titres de compétences étrangers (ECA).",
+        "options": {
+          "less_than_secondary": "Moins que le secondaire (lycée)",
+          "secondary": "Diplôme d'études secondaires (diplôme de fin d'études secondaires)",
+          "one_year_post_secondary": "Programme postsecondaire d'un an",
+          "two_year_post_secondary": "Programme postsecondaire de deux ans",
+          "bachelor": "Baccalauréat (3+ ans)",
+          "two_or_more_certificates": "Deux certificats, diplômes ou grades ou plus",
+          "master": "Maîtrise ou diplôme professionnel",
+          "phd": "Doctorat universitaire (PhD)"
+        },
+        "important": "Important : Si vous avez terminé vos études à l'extérieur du Canada, vous devez avoir un rapport d'Évaluation des titres de compétences étrangers (ECA) d'une organisation désignée."
+      },
+      "language": {
+        "title": "Langue",
+        "description": "Compétence en langue officielle",
+        "firstLanguage": "Première langue officielle",
+        "subtitle": "Sélectionnez votre test de langue et entrez vos résultats. Nous les convertirons automatiquement en niveaux CLB/NCLC.",
+        "language": "Langue",
+        "testType": "Type de test",
+        "speaking": "Expression orale",
+        "listening": "Compréhension orale",
+        "reading": "Compréhension écrite",
+        "writing": "Expression écrite",
+        "clbLevel": "Niveau CLB",
+        "nclcLevel": "Niveau NCLC",
+        "secondLanguage": "Deuxième langue officielle (Optionnel)",
+        "secondLanguageLabel": "J'ai des résultats de test pour une deuxième langue officielle (+24 points si CLB 5+)",
+        "acceptedTests": "Tests acceptés : IELTS General Training, CELPIP-G pour l'anglais | TEF Canada, TCF Canada pour le français",
+        "testTypes": {
+          "ielts": "IELTS General Training",
+          "celpip": "CELPIP-G",
+          "tef": "TEF Canada",
+          "tcf": "TCF Canada"
+        }
+      },
+      "work": {
+        "title": "Expérience de travail",
+        "description": "Expérience de travail canadienne",
+        "canadianWork": "Expérience de travail canadienne",
+        "canadianWorkDesc": "Combien d'années d'expérience de travail qualifié au Canada avez-vous au cours des 10 dernières années? Cela doit être un travail rémunéré à temps plein (ou équivalent à temps partiel) dans NOC TEER 0, 1, 2 ou 3.",
+        "foreignWork": "Expérience de travail à l'étranger",
+        "foreignWorkDesc": "Combien d'années d'expérience de travail qualifié avez-vous à l'extérieur du Canada au cours des 10 dernières années? Cela contribue aux points de transférabilité des compétences.",
+        "certificate": "Certificat de compétence",
+        "certificateLabel": "J'ai un certificat de compétence d'une province ou d'un territoire canadien",
+        "certificateDesc": "Cela s'applique aux métiers spécialisés. Peut rapporter jusqu'à 50 points supplémentaires en transférabilité des compétences.",
+        "skilledWork": "Qu'est-ce qui compte comme travail qualifié?",
+        "teer0": "TEER 0 : Emplois de gestion",
+        "teer1": "TEER 1 : Emplois professionnels (généralement nécessitent un diplôme universitaire)",
+        "teer2": "TEER 2 : Emplois techniques et métiers spécialisés (généralement nécessitent un collège ou un apprentissage)",
+        "teer3": "TEER 3 : Emplois nécessitant une formation technique ou secondaire plus formation",
+        "options": {
+          "none": "Aucun ou moins d'un an",
+          "1_year": "1 an",
+          "2_years": "2 ans",
+          "3_years": "3 ans",
+          "4_years": "4 ans",
+          "5_plus_years": "5 ans ou plus"
+        }
+      },
+      "spouse": {
+        "title": "Conjoint/Partenaire",
+        "description": "État matrimonial et détails du conjoint",
+        "maritalStatus": "État matrimonial",
+        "spouseLabel": "J'ai un conjoint ou un partenaire de fait qui viendra avec moi au Canada",
+        "spouseEducation": "Éducation du conjoint",
+        "spouseLanguage": "Compétences linguistiques du conjoint",
+        "spouseLanguageDesc": "Entrez les niveaux CLB de votre conjoint pour sa première langue officielle",
+        "spouseWork": "Expérience de travail canadienne du conjoint",
+        "note": "Note : Avoir un conjoint affecte vos points. Si votre conjoint a de solides qualifications, il peut vous rapporter des points supplémentaires. Cependant, vos points individuels dans certaines catégories seront légèrement réduits."
+      },
+      "additional": {
+        "title": "Points supplémentaires",
+        "description": "Facteurs qualifiants supplémentaires",
+        "provincialNomination": "Nomination provinciale",
+        "provincialNominationLabel": "J'ai une nomination provinciale",
+        "provincialNominationDesc": "+600 points - Garantit pratiquement une invitation à présenter une demande",
+        "jobOffer": "Offre d'emploi valide",
+        "jobOfferLabel": "J'ai une offre d'emploi valide d'un employeur canadien",
+        "jobOfferTeer": "Catégorie TEER de l'offre d'emploi",
+        "teer0": "TEER 0 - Emplois de gestion (+200 points)",
+        "teer1_2_3": "TEER 1, 2 ou 3 - Autres emplois qualifiés (+50 points)",
+        "canadianEducation": "Éducation canadienne",
+        "canadianEducationLabel": "J'ai un titre d'études postsecondaires canadien",
+        "credentialType": "Type de titre",
+        "oneTwoYear": "Titre de 1 ou 2 ans (+15 points)",
+        "threePlusYear": "Titre de 3 ans ou plus (+30 points)",
+        "twoOrMore": "Deux titres ou plus (+30 points)",
+        "sibling": "Frère ou sœur au Canada",
+        "siblingLabel": "J'ai un frère ou une sœur au Canada qui est citoyen ou résident permanent",
+        "siblingDesc": "+15 points - Doit avoir 18 ans ou plus et vivre au Canada",
+        "almostDone": "Presque terminé! Cliquez sur \"Calculer le score\" pour voir votre score CRS et obtenir votre feuille de route personnalisée."
+      },
+      "stepOf": "Étape {{current}} sur {{total}}",
+      "calculateScore": "Calculer le score"
+    },
+    "results": {
+      "title": "Votre score CRS",
+      "excellent": "Score excellent!",
+      "competitive": "Score compétitif",
+      "goodProgress": "Bon progrès",
+      "needsImprovement": "Nécessite des améliorations",
+      "scoreBreakdown": "Répartition du score",
+      "coreHumanCapital": "Capital humain principal",
+      "spousePartner": "Conjoint/Partenaire",
+      "skillTransferability": "Transférabilité des compétences",
+      "additionalPoints": "Points supplémentaires",
+      "totalScore": "Score total",
+      "generatePDF": "Télécharger le rapport PDF",
+      "generateGuideline": "Générer une feuille de route alimentée par l'IA",
+      "generating": "Génération...",
+      "improvementPlan": "Plan d'amélioration personnalisé",
+      "improvementPlanDesc": "Basé sur votre profil, voici des moyens stratégiques d'augmenter votre score CRS et d'améliorer vos chances de recevoir une invitation à présenter une demande.",
+      "quickWins": "Gains rapides",
+      "quickWinsDesc": "Ces améliorations sont relativement faciles à réaliser et peuvent rapidement augmenter votre score.",
+      "strategicMoves": "Mouvements stratégiques",
+      "strategicMovesDesc": "Stratégies à fort impact qui peuvent considérablement augmenter votre score. Celles-ci peuvent nécessiter plus de temps ou d'efforts.",
+      "allSuggestions": "Toutes les suggestions d'amélioration",
+      "potentialGain": "Gain potentiel",
+      "difficulty": "Difficulté",
+      "timeframe": "Délai",
+      "priority": "Priorité",
+      "actionSteps": "Étapes d'action",
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile",
+      "high": "Élevé",
+      "low": "Faible"
+    }
+  },
+  "pathways": {
+    "title": "Voies d'immigration canadiennes",
+    "subtitle": "Comprendre vos options est la première étape pour immigrer avec succès au Canada. Chaque voie a des exigences, des délais et des avantages différents.",
+    "importantNotice": "Important : CRS vs. Autres systèmes d'immigration",
+    "importantNoticeDesc": "Le Système de classement complet (CRS) est utilisé uniquement pour Entrée express (résidence permanente). Il ne s'applique PAS aux permis d'études, aux permis de travail temporaires, au parrainage familial ou aux demandes de citoyenneté. Chaque voie a ses propres exigences et critères d'évaluation.",
+    "choosePath": "Choisissez votre voie d'immigration",
+    "choosePathDesc": "Chaque voie sert des objectifs différents. Examinez les exigences, les délais et les coûts pour trouver celui qui vous convient le mieux.",
+    "expressEntry": {
+      "title": "Entrée express (RP)",
+      "description": "Résidence permanente en tant que travailleur qualifié par le biais du Système de classement complet (CRS).",
+      "usesCRS": "Oui",
+      "languageTest": "IELTS General / CELPIP / TEF / TCF",
+      "timeline": "6-12 mois",
+      "cost": "1 365 $ CAD + médical/biométrie",
+      "proofOfFunds": "14 700 $ pour 1 personne, 18 300 $ pour 2",
+      "badge": "Le plus populaire"
+    },
+    "studyPermit": {
+      "title": "Permis d'études",
+      "description": "Étudier dans un établissement d'enseignement désigné (EED) du Canada et potentiellement passer à la RP.",
+      "usesCRS": "Non",
+      "languageTest": "IELTS Academic / TOEFL / PTE / Duolingo",
+      "timeline": "4-8 semaines",
+      "cost": "150 $ CAD + biométrie",
+      "proofOfFunds": "20 635 $/an + frais de scolarité (+5 000 $ pour le conjoint, +3 000 $ par enfant)"
+    },
+    "workPermit": {
+      "title": "Permis de travail",
+      "description": "Travailler temporairement au Canada avec une offre d'emploi, pouvant mener à la RP grâce à l'expérience canadienne.",
+      "usesCRS": "Non",
+      "languageTest": "Optionnel (dépend de l'employeur)",
+      "timeline": "2-4 mois",
+      "cost": "155 $ CAD + biométrie",
+      "proofOfFunds": "Varie (si non pris en charge par l'employeur)"
+    },
+    "pnp": {
+      "title": "Programme des candidats des provinces",
+      "description": "Obtenez une nomination d'une province canadienne pour répondre aux besoins du marché du travail local. Ajoute souvent 600 points CRS.",
+      "usesCRS": "Oui",
+      "languageTest": "IELTS General / CELPIP / TEF",
+      "timeline": "6-18 mois",
+      "cost": "1 500 $ - 2 300 $ CAD (varie selon la province)",
+      "proofOfFunds": "Similaire à Entrée express",
+      "badge": "Focus provincial"
+    },
+    "quebec": {
+      "title": "RP Québec",
+      "description": "Résidence permanente par le biais du propre système de sélection du Québec (Arrima). Langue française obligatoire.",
+      "usesCRS": "Non",
+      "languageTest": "TEF / TCF (français B2+ requis)",
+      "timeline": "12-24 mois",
+      "cost": "1 100 $ CAD + frais de RP fédérale",
+      "proofOfFunds": "Varie selon la taille de la famille",
+      "badge": "Français requis"
+    },
+    "citizenship": {
+      "title": "Citoyenneté canadienne",
+      "description": "Devenir citoyen canadien après avoir détenu la résidence permanente pendant 3 ans ou plus.",
+      "usesCRS": "Non",
+      "languageTest": "IELTS GT / CELPIP (CLB 4)",
+      "timeline": "12-24 mois",
+      "cost": "630 $ CAD (adultes), 100 $ (mineurs)",
+      "proofOfFunds": "Non requis"
+    },
+    "comparison": {
+      "title": "Comparaison rapide",
+      "pathway": "Voie",
+      "usesCRS": "CRS utilisé?",
+      "jobOffer": "Offre d'emploi",
+      "mainGoal": "Objectif principal",
+      "bestFor": "Idéal pour"
+    },
+    "notSure": {
+      "title": "Vous ne savez pas quelle voie vous convient?",
+      "subtitle": "Nos experts en immigration peuvent vous aider à évaluer vos options et créer une stratégie personnalisée basée sur vos qualifications, vos objectifs et vos délais.",
+      "getAssessment": "Obtenir une évaluation personnalisée",
+      "bookConsultation": "Réserver une consultation gratuite"
+    }
+  },
+  "services": {
+    "title": "Nos services professionnels",
+    "subtitle": "Soutien complet de la planification à l'établissement au Canada",
+    "informationSession": {
+      "title": "Séance d'information et d'orientation",
+      "description": "Consultation d'experts avant l'arrivée couvrant la recherche d'emploi, la rédaction de CV, l'évitement des arnaques et les étapes de préparation essentielles",
+      "features": {
+        "jobSearch": "Stratégies pratiques de recherche d'emploi",
+        "cvWriting": "Assistance CV style canadien",
+        "provinceSelection": "Orientation pour la sélection de province et de ville",
+        "qa": "Questions-réponses à la demande"
+      },
+      "button": "Réserver une séance d'orientation"
+    },
+    "settlementSupport": {
+      "title": "Services de soutien à l'établissement",
+      "description": "Assistance étape par étape après l'arrivée, y compris le logement, la prise en charge à l'aéroport et la configuration des services essentiels",
+      "features": {
+        "airportPickup": "Prise en charge à l'aéroport et transport",
+        "housing": "Assistance à la recherche de logement",
+        "services": "Configuration bancaire, SIM, carte de transport",
+        "registration": "Inscription SIN et carte santé"
+      },
+      "button": "Explorer les services"
+    },
+    "marketplace": {
+      "title": "Services de marché",
+      "description": "Marché du logement, fournisseurs de services vérifiés et avantages exclusifs pour les nouveaux arrivants",
+      "features": {
+        "housing": "Annonces de logement vérifiées",
+        "providers": "Fournisseurs de services professionnels",
+        "community": "Accès communautaire et réseautage",
+        "deals": "Offres exclusives pour nouveaux arrivants"
+      },
+      "button": "Rejoindre la liste d'attente",
+      "badge": "Bientôt disponible"
+    }
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "title": "Calculez votre",
+        "titleHighlight": "Score CRS en 5 minutes",
+        "subtitle": "Obtenez votre feuille de route personnalisée alimentée par l'IA et des conseils professionnels pour votre parcours d'immigration canadienne",
+        "calculateButton": "Calculer le score CRS maintenant",
+        "exploreButton": "Explorer les voies d'immigration",
+        "irccAccurate": "Conforme IRCC",
+        "privateSecure": "100% privé et sécurisé",
+        "fiveMinute": "Évaluation de 5 minutes"
+      },
+      "howItWorks": {
+        "title": "Comment ça fonctionne",
+        "subtitle": "Quatre étapes simples pour commencer votre parcours d'immigration canadienne",
+        "step1": {
+          "number": "01",
+          "title": "Calculez votre score",
+          "description": "Complétez notre calculateur CRS précis en seulement 5 minutes"
+        },
+        "step2": {
+          "number": "02",
+          "title": "Obtenez une feuille de route alimentée par l'IA",
+          "description": "Recevez un plan d'amélioration personnalisé adapté à votre profil"
+        },
+        "step3": {
+          "number": "03",
+          "title": "Accédez à votre tableau de bord",
+          "description": "Suivez vos progrès et gérez tous vos documents d'immigration"
+        },
+        "step4": {
+          "number": "04",
+          "title": "Réservez des conseils d'experts",
+          "description": "Obtenez une consultation professionnelle chaque fois que vous avez besoin d'aide"
+        }
+      },
+      "whyChooseUs": {
+        "title": "Pourquoi nous choisir",
+        "subtitle": "Professionnel, précis et approuvé par des milliers de nouveaux arrivants",
+        "irccAccurate": {
+          "title": "Conforme IRCC",
+          "description": "Notre calculateur CRS suit exactement les règles de notation officielles IRCC 2025 pour une précision complète"
+        },
+        "aiPowered": {
+          "title": "Informations alimentées par l'IA",
+          "description": "Obtenez des feuilles de route personnalisées générées par une IA avancée adaptée à votre situation unique"
+        },
+        "dataPrivacy": {
+          "title": "Confidentialité des données",
+          "description": "Vos informations sont cryptées et sécurisées. Nous ne partageons jamais vos données avec des tiers"
+        }
+      },
+      "cta": {
+        "title": "Prêt à commencer votre parcours?",
+        "subtitle": "Calculez votre score CRS maintenant et obtenez votre feuille de route personnalisée en quelques minutes",
+        "calculateButton": "Calculer le score CRS",
+        "consultationButton": "Réserver une consultation"
+      }
+    },
+    "about": {
+      "title": "À propos de nous",
+      "subtitle": "Permettre aux candidats du monde entier de réaliser leurs rêves d'immigration canadienne grâce à des outils précis, des conseils d'experts et un soutien complet.",
+      "ourStory": {
+        "title": "Notre histoire",
+        "p1": "Canada Immigration Services a été fondé avec une mission simple mais puissante : rendre l'immigration canadienne accessible, transparente et réalisable pour les candidats du monde entier. Nous avons reconnu que le processus d'immigration peut être accablant, avec des exigences complexes, des règlements en constante évolution et un manque d'informations claires et précises.",
+        "p2": "Notre parcours a commencé lorsque nos fondateurs, eux-mêmes immigrants au Canada, ont vécu de première main les défis et la confusion qui accompagnent la navigation dans le système d'immigration canadien. Ils ont vu trop de candidats qualifiés lutter pour comprendre leurs options, calculer leurs scores CRS avec précision ou identifier la meilleure voie pour leur situation unique.",
+        "p3": "Aujourd'hui, nous avons construit une plateforme complète qui combine une technologie de pointe avec l'expertise humaine. Notre calculateur CRS conforme IRCC, notre conseiller de voie alimenté par l'IA et nos services de consultation d'experts ont aidé des milliers de candidats à faire des pas confiants vers leurs rêves canadiens."
+      },
+      "mission": {
+        "title": "Notre mission",
+        "description": "Fournir des outils et services d'immigration précis, accessibles et complets qui permettent aux candidats de prendre des décisions éclairées concernant leur parcours d'immigration canadienne.",
+        "belief": "Nous croyons que chaque candidat qualifié mérite l'opportunité de construire un meilleur avenir au Canada, et nous nous engageons à rendre ce parcours aussi fluide et transparent que possible."
+      },
+      "vision": {
+        "title": "Notre vision",
+        "description": "Devenir la plateforme la plus fiable et la plus complète pour l'immigration canadienne, aidant des millions de candidats à naviguer dans leur parcours de l'évaluation initiale à l'établissement réussi au Canada.",
+        "envision": "Nous envisageons un monde où l'immigration est transparente, accessible et réalisable pour tous, peu importe où ils commencent leur parcours."
+      },
+      "values": {
+        "title": "Nos valeurs fondamentales",
+        "subtitle": "Les principes qui guident tout ce que nous faisons",
+        "accuracy": {
+          "title": "Précision",
+          "description": "Nous maintenons les normes de précision les plus élevées, garantissant que nos outils sont conformes aux directives officielles de l'IRCC."
+        },
+        "candidateFirst": {
+          "title": "Candidat d'abord",
+          "description": "Chaque fonctionnalité et service est conçu en pensant aux candidats. Votre succès est notre succès."
+        },
+        "empathy": {
+          "title": "Empathie",
+          "description": "Nous comprenons les défis de l'immigration et fournissons un soutien compatissant et personnalisé."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "Nous exploitons une technologie IA de pointe pour fournir des feuilles de route et des recommandations personnalisées."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "description": "Nous visons l'excellence dans chaque interaction, des calculs aux consultations."
+        },
+        "transparency": {
+          "title": "Transparence",
+          "description": "Tarification claire, évaluations honnêtes et processus transparents. Pas de frais cachés ni de fausses promesses."
+        },
+        "accessibility": {
+          "title": "Accessibilité",
+          "description": "Nous croyons que les conseils en immigration devraient être accessibles à tous, quel que soit leur origine ou leur emplacement."
+        },
+        "resultsDriven": {
+          "title": "Axé sur les résultats",
+          "description": "Nous mesurons notre succès par le succès de nos candidats dans la réalisation de leurs objectifs d'immigration canadienne."
+        }
+      }
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "subtitle": "Nous sommes là pour vous aider! Contactez notre équipe pour des questions, du soutien ou des consultations.",
+      "email": {
+        "title": "Envoyez-nous un courriel",
+        "description": "Envoyez-nous un courriel à tout moment",
+        "address": "info@canadaimmigration.com"
+      },
+      "phone": {
+        "title": "Appelez-nous",
+        "description": "Lun-Ven 9h-17h HNE",
+        "number": "+1 (555) 123-4567"
+      },
+      "visit": {
+        "title": "Visitez-nous",
+        "address": "Toronto, Ontario, Canada"
+      },
+      "hours": {
+        "title": "Heures d'ouverture",
+        "weekday": "Lundi - Vendredi : 9h00 - 17h00 HNE",
+        "saturday": "Samedi : 10h00 - 14h00 HNE",
+        "sunday": "Dimanche : Fermé"
+      },
+      "form": {
+        "title": "Envoyez-nous un message",
+        "name": "Nom complet",
+        "email": "Adresse courriel",
+        "subject": "Sujet",
+        "message": "Message",
+        "sendButton": "Envoyer le message",
+        "success": {
+          "title": "Message envoyé!",
+          "description": "Merci de nous avoir contactés. Nous vous répondrons dans les 24 à 48 heures."
+        }
+      },
+      "faq": {
+        "title": "Questions fréquemment posées",
+        "subtitle": "Réponses rapides aux questions courantes",
+        "legalAdvice": {
+          "question": "Fournissez-vous des conseils juridiques?",
+          "answer": "Nous fournissons des informations générales et des conseils. Pour des conseils juridiques officiels, nous recommandons de consulter un consultant en immigration agréé ou un avocat. Nos services de consultation vous mettent en contact avec des professionnels qualifiés."
+        },
+        "dataSecurity": {
+          "question": "Mes informations personnelles sont-elles sécurisées?",
+          "answer": "Oui, nous prenons la sécurité des données au sérieux. Toutes les informations sont cryptées et stockées en toute sécurité. Nous ne partageons jamais vos informations personnelles avec des tiers sans votre consentement explicite. Consultez notre Politique de confidentialité pour plus de détails."
+        }
+      }
+    },
+    "company": {
+      "title": "Votre partenaire de confiance en",
+      "titleHighlight": "Immigration canadienne",
+      "subtitle": "Nous permettons aux candidats du monde entier de réaliser leurs rêves d'immigration canadienne grâce à des outils précis, des conseils d'experts et des services de soutien complets.",
+      "mission": {
+        "title": "Notre mission",
+        "description": "Fournir des outils et services d'immigration précis, accessibles et complets qui permettent aux candidats de prendre des décisions éclairées concernant leur parcours d'immigration canadienne. Nous croyons que chaque candidat qualifié mérite l'opportunité de construire un meilleur avenir au Canada."
+      },
+      "vision": {
+        "title": "Notre vision",
+        "description": "Devenir la plateforme la plus fiable et la plus complète pour l'immigration canadienne, aidant des millions de candidats à naviguer dans leur parcours de l'évaluation initiale à l'établissement réussi au Canada. Nous envisageons un monde où l'immigration est transparente, accessible et réalisable pour tous."
+      },
+      "values": {
+        "title": "Nos valeurs fondamentales",
+        "subtitle": "Les principes qui guident tout ce que nous faisons",
+        "accuracy": {
+          "title": "Précision et confiance",
+          "description": "Nous maintenons les normes de précision les plus élevées, garantissant que notre calculateur CRS et nos outils sont conformes aux directives officielles de l'IRCC. La confiance s'acquiert par la précision."
+        },
+        "candidateFirst": {
+          "title": "Candidat d'abord",
+          "description": "Chaque fonctionnalité et service est conçu en pensant aux candidats. Votre succès est notre succès, et nous nous engageons dans votre parcours à chaque étape."
+        },
+        "empathy": {
+          "title": "Empathie et soutien",
+          "description": "Nous comprenons les défis de l'immigration. Notre équipe fournit un soutien compatissant et personnalisé pour vous aider à naviguer dans ce processus qui change la vie."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "Nous exploitons une technologie IA de pointe et des informations sur les données pour fournir des feuilles de route et des recommandations personnalisées qui s'adaptent à votre situation unique."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "description": "Nous visons l'excellence dans chaque interaction, de nos calculs précis à nos consultations professionnelles et nos services de soutien complets."
+        },
+        "transparency": {
+          "title": "Transparence",
+          "description": "Tarification claire, évaluations honnêtes et processus transparents. Pas de frais cachés, pas de fausses promesses—juste des conseils directs et fiables."
+        }
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Votre partenaire de confiance pour le succès de l'immigration canadienne. Conseils professionnels du calcul CRS à l'établissement.",
+    "services": "Services",
+    "company": "Entreprise",
+    "contact": "Contact",
+    "copyright": "© {{year}} Services d'immigration Canada. Tous droits réservés.",
+    "disclaimer": "Avertissement : Ce calculateur CRS est à titre de référence uniquement. Les scores officiels sont déterminés par l'IRCC."
+  },
+  "staticData": {
+    "countries": [
+      "Afghanistan", "Albanie", "Algérie", "Andorre", "Angola", "Antigua-et-Barbuda", "Argentine", "Arménie", "Australie", "Autriche",
+      "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh", "Barbade", "Biélorussie", "Belgique", "Belize", "Bénin", "Bhoutan",
+      "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", "Bulgarie", "Burkina Faso", "Burundi", "Cambodge", "Cameroun",
+      "Canada", "Cap-Vert", "République centrafricaine", "Tchad", "Chili", "Chine", "Colombie", "Comores", "Congo", "Costa Rica",
+      "Croatie", "Cuba", "Chypre", "République tchèque", "Danemark", "Djibouti", "Dominique", "République dominicaine", "Timor oriental", "Équateur",
+      "Égypte", "El Salvador", "Guinée équatoriale", "Érythrée", "Estonie", "Éthiopie", "Fidji", "Finlande", "France", "Gabon",
+      "Gambie", "Géorgie", "Allemagne", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée", "Guinée-Bissau", "Guyane",
+      "Haïti", "Honduras", "Hongrie", "Islande", "Inde", "Indonésie", "Iran", "Irak", "Irlande", "Israël",
+      "Italie", "Côte d'Ivoire", "Jamaïque", "Japon", "Jordanie", "Kazakhstan", "Kenya", "Kiribati", "Corée du Nord", "Corée du Sud",
+      "Kosovo", "Koweït", "Kirghizistan", "Laos", "Lettonie", "Liban", "Lesotho", "Liberia", "Libye", "Liechtenstein",
+      "Lituanie", "Luxembourg", "Macédoine", "Madagascar", "Malawi", "Malaisie", "Maldives", "Mali", "Malte", "Îles Marshall",
+      "Mauritanie", "Maurice", "Mexique", "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro", "Maroc", "Mozambique",
+      "Myanmar", "Namibie", "Nauru", "Népal", "Pays-Bas", "Nouvelle-Zélande", "Nicaragua", "Niger", "Nigeria", "Norvège",
+      "Oman", "Pakistan", "Palaos", "Palestine", "Panama", "Papouasie-Nouvelle-Guinée", "Paraguay", "Pérou", "Philippines", "Pologne",
+      "Portugal", "Qatar", "Roumanie", "Russie", "Rwanda", "Saint-Kitts-et-Nevis", "Sainte-Lucie", "Saint-Vincent-et-les-Grenadines", "Samoa", "Saint-Marin",
+      "São Tomé-et-Príncipe", "Arabie saoudite", "Sénégal", "Serbie", "Seychelles", "Sierra Leone", "Singapour", "Slovaquie", "Slovénie", "Îles Salomon",
+      "Somalie", "Afrique du Sud", "Soudan du Sud", "Espagne", "Sri Lanka", "Soudan", "Suriname", "Eswatini", "Suède", "Suisse",
+      "Syrie", "Taïwan", "Tadjikistan", "Tanzanie", "Thaïlande", "Togo", "Tonga", "Trinité-et-Tobago", "Tunisie", "Turquie",
+      "Turkménistan", "Tuvalu", "Ouganda", "Ukraine", "Émirats arabes unis", "Royaume-Uni", "États-Unis", "Uruguay", "Ouzbékistan", "Vanuatu",
+      "Vatican", "Venezuela", "Vietnam", "Yémen", "Zambie", "Zimbabwe"
+    ],
+    "educationLevels": [
+      "Moins que le secondaire / École secondaire",
+      "Diplôme d'études secondaires / École secondaire",
+      "Certificat / Diplôme (1 an)",
+      "Diplôme (2 ans)",
+      "Diplôme avancé / Grade d'associé (3 ans)",
+      "Baccalauréat (3-4 ans)",
+      "Diplôme / Certificat postuniversitaire",
+      "Maîtrise",
+      "Doctorat (PhD)",
+      "Diplôme professionnel (MD, JD, DDS, etc.)"
+    ],
+    "maritalStatus": [
+      "Célibataire",
+      "Marié",
+      "Conjoint de fait",
+      "Divorcé",
+      "Veuf"
+    ],
+    "provinces": [
+      "Alberta",
+      "Colombie-Britannique",
+      "Manitoba",
+      "Nouveau-Brunswick",
+      "Terre-Neuve-et-Labrador",
+      "Territoires du Nord-Ouest",
+      "Nouvelle-Écosse",
+      "Nunavut",
+      "Ontario",
+      "Île-du-Prince-Édouard",
+      "Québec",
+      "Saskatchewan",
+      "Yukon"
+    ],
+    "frenchLevels": [
+      "Aucune connaissance du français",
+      "A1 - Débutant",
+      "A2 - Élémentaire",
+      "B1 - Intermédiaire",
+      "B2 - Intermédiaire supérieur (Requis pour le Québec)",
+      "C1 - Avancé",
+      "C2 - Maîtrise"
+    ]
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord administrateur",
+      "loading": "Chargement du tableau de bord...",
+      "overview": "Aperçu",
+      "calculations": "Calculs",
+      "pathwayAdvisor": "Conseiller de voie",
+      "consultations": "Consultations",
+      "analytics": "Analytique",
+      "users": "Utilisateurs",
+      "reports": "Rapports"
+    }
+  },
+  "comingSoon": {
+    "informationSession": {
+      "title": "Séance d'information et d'orientation",
+      "description": "Réservez votre consultation avant l'arrivée avec nos experts en immigration. Apprenez-en plus sur la recherche d'emploi, la rédaction de CV, l'évitement des arnaques et la préparation essentielle."
+    },
+    "settlementSupport": {
+      "title": "Services de soutien à l'établissement",
+      "description": "Soutien complet après l'arrivée, y compris la prise en charge à l'aéroport, la recherche de logement et la configuration des services essentiels."
+    },
+    "userDashboard": {
+      "title": "Tableau de bord utilisateur",
+      "description": "Suivez vos calculs CRS, feuilles de route, réservations et documents en un seul endroit."
+    },
+    "agentDashboard": {
+      "title": "Tableau de bord agent",
+      "description": "Gérez les prospects, les consultations et les communications avec les clients efficacement."
+    }
+  }
+}
+

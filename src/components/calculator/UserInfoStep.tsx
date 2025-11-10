@@ -4,12 +4,14 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
 import { trackCalculatorStep } from '../../utils/calculatorSession';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface UserInfoStepProps {
   onComplete: (info: { fullName: string; email: string; phone: string }) => void;
 }
 
 export function UserInfoStep({ onComplete }: UserInfoStepProps) {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -19,19 +21,19 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
     const newErrors: Record<string, string> = {};
 
     if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = t('calculator.userInfo.errors.fullNameRequired');
     }
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('calculator.userInfo.errors.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('common.errors.invalidEmail');
     }
 
     if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = t('calculator.userInfo.errors.phoneRequired');
     } else if (!/^\+?[\d\s()-]{10,}$/.test(phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = t('common.errors.invalidPhone');
     }
 
     setErrors(newErrors);
@@ -60,10 +62,10 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
             <UserCircle className="w-8 h-8" />
           </div>
           <h1 className="text-4xl font-bold text-secondary-900 mb-4">
-            Let's Calculate Your CRS Score
+            {t('calculator.userInfo.title')}
           </h1>
           <p className="text-xl text-secondary-600 max-w-xl mx-auto">
-            First, we need a few details to get started. Your information is secure and will only be used to provide you with your results.
+            {t('calculator.userInfo.subtitle')}
           </p>
         </div>
 
@@ -71,7 +73,7 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               id="fullName"
-              label="Full Name"
+              label={t('calculator.userInfo.fullName')}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               error={errors.fullName}
@@ -83,38 +85,38 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
             <Input
               id="email"
               type="email"
-              label="Email Address"
+              label={t('calculator.userInfo.email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
               required
               placeholder="john@example.com"
               autoComplete="email"
-              helperText="We'll send your results to this email"
+              helperText={t('calculator.userInfo.emailHelper')}
             />
 
             <Input
               id="phone"
               type="tel"
-              label="Phone Number"
+              label={t('calculator.userInfo.phone')}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               error={errors.phone}
               required
               placeholder="+1 (555) 123-4567"
               autoComplete="tel"
-              helperText="Include country code if outside Canada"
+              helperText={t('calculator.userInfo.phoneHelper')}
             />
 
             <div className="pt-4">
               <Button type="submit" size="lg" className="w-full">
-                Continue to Calculator
+                {t('calculator.userInfo.continue')}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
 
             <p className="text-sm text-secondary-500 text-center mt-4">
-              By continuing, you agree to our Terms of Service and Privacy Policy. Your information is encrypted and secure.
+              {t('calculator.userInfo.agreement')}
             </p>
           </form>
         </Card>
@@ -122,15 +124,15 @@ export function UserInfoStep({ onComplete }: UserInfoStepProps) {
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="p-4">
             <div className="text-2xl font-bold text-primary-600 mb-1">5 min</div>
-            <div className="text-sm text-secondary-600">Quick assessment</div>
+            <div className="text-sm text-secondary-600">{t('calculator.userInfo.quickAssessment')}</div>
           </div>
           <div className="p-4">
             <div className="text-2xl font-bold text-primary-600 mb-1">100%</div>
-            <div className="text-sm text-secondary-600">IRCC accurate</div>
+            <div className="text-sm text-secondary-600">{t('calculator.userInfo.irccAccurate')}</div>
           </div>
           <div className="p-4">
-            <div className="text-2xl font-bold text-primary-600 mb-1">Secure</div>
-            <div className="text-sm text-secondary-600">Data encrypted</div>
+            <div className="text-2xl font-bold text-primary-600 mb-1">{t('common.labels.info')}</div>
+            <div className="text-sm text-secondary-600">{t('calculator.userInfo.dataEncrypted')}</div>
           </div>
         </div>
       </div>

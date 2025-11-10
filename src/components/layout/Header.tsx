@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-secondary-200 shadow-sm">
@@ -15,23 +18,24 @@ export function Header() {
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">C</span>
               </div>
-              <span className="text-xl font-bold text-secondary-900">Canada Immigration</span>
+              <span className="text-xl font-bold text-secondary-900">{t('navigation.brandName')}</span>
             </Link>
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-8">
             <Link to="/pathways" className="text-secondary-700 hover:text-primary-600 transition-colors">
-              Immigration Pathways
+              {t('navigation.pathways')}
             </Link>
             <Link to="/calculator" className="text-secondary-700 hover:text-primary-600 transition-colors">
-              CRS Calculator
+              {t('navigation.calculator')}
             </Link>
             <Link to="/services" className="text-secondary-700 hover:text-primary-600 transition-colors">
-              Services
+              {t('navigation.services')}
             </Link>
             <Link to="/pathway-advisor">
-              <Button size="sm">Free Assessment</Button>
+              <Button size="sm">{t('navigation.freeAssessment')}</Button>
             </Link>
+            <LanguageSwitcher />
           </div>
 
           <button
@@ -51,26 +55,29 @@ export function Header() {
               className="block px-4 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Immigration Pathways
+              {t('navigation.pathways')}
             </Link>
             <Link
               to="/calculator"
               className="block px-4 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              CRS Calculator
+              {t('navigation.calculator')}
             </Link>
             <Link
               to="/services"
               className="block px-4 py-2 text-secondary-700 hover:bg-secondary-100 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Services
+              {t('navigation.services')}
             </Link>
 
             <Link to="/pathway-advisor" onClick={() => setMobileMenuOpen(false)}>
-              <Button className="w-full">Free Assessment</Button>
+              <Button className="w-full">{t('navigation.freeAssessment')}</Button>
             </Link>
+            <div className="px-4">
+              <LanguageSwitcher />
+            </div>
           </div>
         )}
       </nav>

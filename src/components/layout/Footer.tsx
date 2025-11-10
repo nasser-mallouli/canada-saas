@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export function Footer() {
+  const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-secondary-900 text-secondary-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -11,86 +15,86 @@ export function Footer() {
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">C</span>
               </div>
-              <span className="text-xl font-bold text-white">Canada Immigration</span>
+              <span className="text-xl font-bold text-white">{t('navigation.brandName')}</span>
             </div>
             <p className="text-secondary-400 text-sm">
-              Your trusted partner for Canadian immigration success. Professional guidance from CRS calculation to settlement.
+              {t('footer.tagline')}
             </p>
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Services</h3>
+            <h3 className="text-white font-semibold mb-4">{t('footer.services')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/calculator" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  CRS Calculator
+                  {t('navigation.calculator')}
                 </Link>
               </li>
               <li>
                 <Link to="/information-session" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Guidance Session
+                  {t('services.informationSession.title')}
                 </Link>
               </li>
               <li>
                 <Link to="/settlement-support" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Settlement Support
+                  {t('services.settlementSupport.title')}
                 </Link>
               </li>
               <li>
                 <Link to="/services" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  All Services
+                  {t('navigation.services')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Company</h3>
+            <h3 className="text-white font-semibold mb-4">{t('footer.company')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/company" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Company
+                  {t('navigation.company')}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  About Us
+                  {t('navigation.about')}
                 </Link>
               </li>
               <li>
                 <Link to="/privacy" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Privacy Policy
+                  {t('navigation.privacy')}
                 </Link>
               </li>
               <li>
                 <Link to="/terms" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Terms of Service
+                  {t('navigation.terms')}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-secondary-400 hover:text-primary-400 transition-colors text-sm">
-                  Contact
+                  {t('navigation.contact')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-4">Contact</h3>
+            <h3 className="text-white font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-2 text-sm">
                 <Mail className="w-4 h-4 mt-0.5 text-primary-400" />
                 <a href="mailto:info@canadaimmigration.com" className="text-secondary-400 hover:text-primary-400 transition-colors">
-                  info@canadaimmigration.com
+                  {t('pages.contact.email.address')}
                 </a>
               </li>
               <li className="flex items-start space-x-2 text-sm">
                 <Phone className="w-4 h-4 mt-0.5 text-primary-400" />
-                <span className="text-secondary-400">+1 (555) 123-4567</span>
+                <span className="text-secondary-400">{t('pages.contact.phone.number')}</span>
               </li>
               <li className="flex items-start space-x-2 text-sm">
                 <MapPin className="w-4 h-4 mt-0.5 text-primary-400" />
-                <span className="text-secondary-400">Toronto, Ontario, Canada</span>
+                <span className="text-secondary-400">{t('pages.contact.visit.address')}</span>
               </li>
             </ul>
           </div>
@@ -99,10 +103,10 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-secondary-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-secondary-400 text-sm">
-              &copy; {new Date().getFullYear()} Canada Immigration Services. All rights reserved.
+              {t('footer.copyright', { year: currentYear })}
             </p>
             <p className="text-secondary-500 text-xs mt-2 md:mt-0">
-              <strong className="text-warning-400">Disclaimer:</strong> This CRS calculator is for reference only. Official scores are determined by IRCC.
+              <strong className="text-warning-400">{t('common.labels.warning')}:</strong> {t('footer.disclaimer')}
             </p>
           </div>
         </div>

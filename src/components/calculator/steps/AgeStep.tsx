@@ -1,6 +1,7 @@
 import { CRSInputData } from '../../../types';
 import { Input } from '../../ui/Input';
 import { Calendar, TrendingUp, Award } from 'lucide-react';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 interface AgeStepProps {
   data: Partial<CRSInputData>;
@@ -8,6 +9,7 @@ interface AgeStepProps {
 }
 
 export function AgeStep({ data, updateData }: AgeStepProps) {
+  const { t } = useTranslation();
   const age = data.age || 25;
   const hasSpouse = data.hasSpouse || false;
 
@@ -55,15 +57,15 @@ export function AgeStep({ data, updateData }: AgeStepProps) {
         <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Calendar className="w-8 h-8 text-primary-600" />
         </div>
-        <h3 className="text-2xl font-bold text-secondary-900 mb-2">What is your age?</h3>
+        <h3 className="text-2xl font-bold text-secondary-900 mb-2">{t('calculator.steps.age.question')}</h3>
         <p className="text-secondary-600 max-w-2xl mx-auto">
-          Age is one of the most important factors in your CRS score. Younger candidates receive more points.
+          {t('calculator.steps.age.subtitle')}
         </p>
       </div>
 
       <div className="max-w-md mx-auto">
         <label className="block text-sm font-medium text-secondary-700 mb-3">
-          Your Age <span className="text-error-500">*</span>
+          {t('calculator.steps.age.label')} <span className="text-error-500">*</span>
         </label>
         <Input
           type="number"
@@ -75,7 +77,7 @@ export function AgeStep({ data, updateData }: AgeStepProps) {
           className="text-center text-2xl font-bold"
         />
         <p className="text-xs text-secondary-500 mt-2 text-center">
-          Must be between 18 and 65 years old
+          {t('calculator.steps.age.helper')}
         </p>
       </div>
 
@@ -83,7 +85,7 @@ export function AgeStep({ data, updateData }: AgeStepProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Award className="w-6 h-6 text-primary-600" />
-            <span className="font-semibold text-secondary-900">Your Points for Age</span>
+            <span className="font-semibold text-secondary-900">{t('calculator.steps.age.pointsLabel')}</span>
           </div>
           <div className="text-3xl font-bold text-primary-600">
             {points} <span className="text-lg text-secondary-500">/ {maxPoints}</span>
@@ -101,15 +103,15 @@ export function AgeStep({ data, updateData }: AgeStepProps) {
           <div className="flex items-start gap-2">
             <TrendingUp className="w-4 h-4 text-success-600 flex-shrink-0 mt-0.5" />
             <div>
-              <strong className="text-secondary-900">Peak Age:</strong>
-              <p className="text-secondary-600">20-29 years = maximum points</p>
+              <strong className="text-secondary-900">{t('calculator.steps.age.peakAge')}:</strong>
+              <p className="text-secondary-600">{t('calculator.steps.age.peakAgeDesc')}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Calendar className="w-4 h-4 text-info-600 flex-shrink-0 mt-0.5" />
             <div>
-              <strong className="text-secondary-900">Points Decline:</strong>
-              <p className="text-secondary-600">After age 30, points decrease gradually</p>
+              <strong className="text-secondary-900">{t('calculator.steps.age.pointsDecline')}:</strong>
+              <p className="text-secondary-600">{t('calculator.steps.age.pointsDeclineDesc')}</p>
             </div>
           </div>
         </div>

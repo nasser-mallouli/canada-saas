@@ -24,10 +24,12 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfService } from './pages/TermsOfService';
 import { Contact } from './pages/Contact';
 import { trackPageView } from './utils/analytics';
+import { useTranslation } from './i18n/useTranslation';
 
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const { isRTL } = useTranslation();
 
   // Track page views on route change
   useEffect(() => {
@@ -38,7 +40,7 @@ function AppContent() {
   }, [location.pathname, isAdminRoute]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className={`flex flex-col min-h-screen ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {!isAdminRoute && <Header />}
       <main className="flex-1">
         <Routes>

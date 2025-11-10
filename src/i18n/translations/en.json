@@ -1,0 +1,681 @@
+{
+  "common": {
+    "buttons": {
+      "back": "Back",
+      "next": "Next",
+      "continue": "Continue",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "close": "Close",
+      "download": "Download",
+      "send": "Send",
+      "search": "Search",
+      "filter": "Filter",
+      "reset": "Reset",
+      "apply": "Apply",
+      "calculate": "Calculate",
+      "startOver": "Start Over",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "viewMore": "View More",
+      "viewAll": "View All",
+      "bookNow": "Book Now",
+      "contactUs": "Contact Us"
+    },
+    "labels": {
+      "required": "Required",
+      "optional": "Optional",
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "warning": "Warning",
+      "info": "Information",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "date": "Date",
+      "time": "Time",
+      "status": "Status",
+      "actions": "Actions",
+      "yes": "Yes",
+      "no": "No",
+      "none": "None",
+      "all": "All",
+      "select": "Select",
+      "choose": "Choose"
+    },
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidPhone": "Please enter a valid phone number",
+      "generic": "Something went wrong. Please try again.",
+      "networkError": "Network error. Please check your connection.",
+      "notFound": "Not found",
+      "unauthorized": "Unauthorized access"
+    },
+    "success": {
+      "saved": "Saved successfully",
+      "deleted": "Deleted successfully",
+      "sent": "Sent successfully",
+      "updated": "Updated successfully"
+    }
+  },
+  "navigation": {
+    "brandName": "Canada Immigration",
+    "home": "Home",
+    "calculator": "CRS Calculator",
+    "pathways": "Immigration Pathways",
+    "services": "Services",
+    "about": "About Us",
+    "contact": "Contact",
+    "company": "Company",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "freeAssessment": "Free Assessment",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "calculator": {
+    "title": "CRS Calculator",
+    "subtitle": "Calculate your Comprehensive Ranking System score",
+    "userInfo": {
+      "title": "Let's Calculate Your CRS Score",
+      "subtitle": "First, we need a few details to get started. Your information is secure and will only be used to provide you with your results.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "emailHelper": "We'll send your results to this email",
+      "phone": "Phone Number",
+      "phoneHelper": "Include country code if outside Canada",
+      "continue": "Continue to Calculator",
+      "agreement": "By continuing, you agree to our Terms of Service and Privacy Policy. Your information is encrypted and secure.",
+      "quickAssessment": "Quick assessment",
+      "irccAccurate": "IRCC accurate",
+      "dataEncrypted": "Data encrypted",
+      "errors": {
+        "fullNameRequired": "Full name is required",
+        "emailRequired": "Email is required",
+        "phoneRequired": "Phone number is required"
+      }
+    },
+    "steps": {
+      "age": {
+        "title": "Age",
+        "description": "Your current age",
+        "question": "What is your age?",
+        "subtitle": "Age is one of the most important factors in your CRS score. Younger candidates receive more points.",
+        "label": "Your Age",
+        "helper": "Must be between 18 and 65 years old",
+        "pointsLabel": "Your Points for Age",
+        "peakAge": "Peak Age",
+        "peakAgeDesc": "20-29 years = maximum points",
+        "pointsDecline": "Points Decline",
+        "pointsDeclineDesc": "After age 30, points decrease gradually"
+      },
+      "education": {
+        "title": "Education",
+        "description": "Highest level of education",
+        "subtitle": "Select your highest level of education. If you studied outside Canada, you'll need an Educational Credential Assessment (ECA).",
+        "options": {
+          "less_than_secondary": "Less than secondary school (high school)",
+          "secondary": "Secondary diploma (high school graduation)",
+          "one_year_post_secondary": "One-year post-secondary program",
+          "two_year_post_secondary": "Two-year post-secondary program",
+          "bachelor": "Bachelor's degree (3+ years)",
+          "two_or_more_certificates": "Two or more certificates, diplomas, or degrees",
+          "master": "Master's degree or professional degree",
+          "phd": "Doctoral level university degree (PhD)"
+        },
+        "important": "Important: If you completed your education outside Canada, you must have an Educational Credential Assessment (ECA) report from a designated organization."
+      },
+      "language": {
+        "title": "Language",
+        "description": "Official language proficiency",
+        "firstLanguage": "First Official Language",
+        "subtitle": "Select your language test and enter your test scores. We'll automatically convert them to CLB/NCLC levels.",
+        "language": "Language",
+        "testType": "Test Type",
+        "speaking": "Speaking",
+        "listening": "Listening",
+        "reading": "Reading",
+        "writing": "Writing",
+        "clbLevel": "CLB Level",
+        "nclcLevel": "NCLC Level",
+        "secondLanguage": "Second Official Language (Optional)",
+        "secondLanguageLabel": "I have test results for a second official language (+24 points if CLB 5+)",
+        "acceptedTests": "Accepted Tests: IELTS General Training, CELPIP-G for English | TEF Canada, TCF Canada for French",
+        "testTypes": {
+          "ielts": "IELTS General Training",
+          "celpip": "CELPIP-G",
+          "tef": "TEF Canada",
+          "tcf": "TCF Canada"
+        }
+      },
+      "work": {
+        "title": "Work Experience",
+        "description": "Canadian work experience",
+        "canadianWork": "Canadian Work Experience",
+        "canadianWorkDesc": "How many years of skilled work experience in Canada do you have in the last 10 years? This must be full-time (or equivalent part-time) paid work in NOC TEER 0, 1, 2, or 3.",
+        "foreignWork": "Foreign Work Experience",
+        "foreignWorkDesc": "How many years of skilled work experience do you have outside Canada in the last 10 years? This contributes to skill transferability points.",
+        "certificate": "Certificate of Qualification",
+        "certificateLabel": "I have a certificate of qualification from a Canadian province or territory",
+        "certificateDesc": "This applies to skilled trades. Can earn up to 50 additional points in skill transferability.",
+        "skilledWork": "What counts as skilled work?",
+        "teer0": "TEER 0: Management jobs",
+        "teer1": "TEER 1: Professional jobs (usually need university degree)",
+        "teer2": "TEER 2: Technical jobs and skilled trades (usually need college or apprenticeship)",
+        "teer3": "TEER 3: Jobs that need technical training or high school plus training",
+        "options": {
+          "none": "None or less than a year",
+          "1_year": "1 year",
+          "2_years": "2 years",
+          "3_years": "3 years",
+          "4_years": "4 years",
+          "5_plus_years": "5 or more years"
+        }
+      },
+      "spouse": {
+        "title": "Spouse/Partner",
+        "description": "Marital status and spouse details",
+        "maritalStatus": "Marital Status",
+        "spouseLabel": "I have a spouse or common-law partner who will come with me to Canada",
+        "spouseEducation": "Spouse's Education",
+        "spouseLanguage": "Spouse's Language Skills",
+        "spouseLanguageDesc": "Enter your spouse's CLB levels for their first official language",
+        "spouseWork": "Spouse's Canadian Work Experience",
+        "note": "Note: Having a spouse affects your points. If your spouse has strong qualifications, they may earn you extra points. However, your individual points in some categories will be slightly reduced."
+      },
+      "additional": {
+        "title": "Additional Points",
+        "description": "Extra qualifying factors",
+        "provincialNomination": "Provincial Nomination",
+        "provincialNominationLabel": "I have a provincial nomination",
+        "provincialNominationDesc": "+600 points - Virtually guarantees an invitation to apply",
+        "jobOffer": "Valid Job Offer",
+        "jobOfferLabel": "I have a valid job offer from a Canadian employer",
+        "jobOfferTeer": "TEER Category of Job Offer",
+        "teer0": "TEER 0 - Management jobs (+200 points)",
+        "teer1_2_3": "TEER 1, 2, or 3 - Other skilled jobs (+50 points)",
+        "canadianEducation": "Canadian Education",
+        "canadianEducationLabel": "I have a Canadian post-secondary credential",
+        "credentialType": "Type of Credential",
+        "oneTwoYear": "1 or 2-year credential (+15 points)",
+        "threePlusYear": "3+ year credential or higher (+30 points)",
+        "twoOrMore": "Two or more credentials (+30 points)",
+        "sibling": "Sibling in Canada",
+        "siblingLabel": "I have a sibling in Canada who is a citizen or permanent resident",
+        "siblingDesc": "+15 points - Must be 18 or older and living in Canada",
+        "almostDone": "Almost done! Click \"Calculate Score\" to see your CRS score and get your personalized roadmap."
+      },
+      "stepOf": "Step {{current}} of {{total}}",
+      "calculateScore": "Calculate Score"
+    },
+    "results": {
+      "title": "Your CRS Score",
+      "excellent": "Excellent Score!",
+      "competitive": "Competitive Score",
+      "goodProgress": "Good Progress",
+      "needsImprovement": "Needs Improvement",
+      "scoreBreakdown": "Score Breakdown",
+      "coreHumanCapital": "Core Human Capital",
+      "spousePartner": "Spouse/Partner",
+      "skillTransferability": "Skill Transferability",
+      "additionalPoints": "Additional Points",
+      "totalScore": "Total Score",
+      "generatePDF": "Download PDF Report",
+      "generateGuideline": "Generate AI-Powered Roadmap",
+      "generating": "Generating...",
+      "improvementPlan": "Personalized Improvement Plan",
+      "improvementPlanDesc": "Based on your profile, here are strategic ways to boost your CRS score and improve your chances of receiving an Invitation to Apply.",
+      "quickWins": "Quick Wins",
+      "quickWinsDesc": "These improvements are relatively easy to achieve and can boost your score quickly.",
+      "strategicMoves": "Strategic Moves",
+      "strategicMovesDesc": "High-impact strategies that can significantly increase your score. These may require more time or effort.",
+      "allSuggestions": "All Improvement Suggestions",
+      "potentialGain": "Potential Gain",
+      "difficulty": "Difficulty",
+      "timeframe": "Timeframe",
+      "priority": "Priority",
+      "actionSteps": "Action Steps",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "high": "High",
+      "low": "Low"
+    }
+  },
+  "pathways": {
+    "title": "Canadian Immigration Pathways",
+    "subtitle": "Understanding your options is the first step to successfully immigrating to Canada. Each pathway has different requirements, timelines, and benefits.",
+    "importantNotice": "Important: CRS vs. Other Immigration Systems",
+    "importantNoticeDesc": "The Comprehensive Ranking System (CRS) is used only for Express Entry (permanent residence). It does NOT apply to study permits, temporary work permits, family sponsorship, or citizenship applications. Each pathway has its own requirements and evaluation criteria.",
+    "choosePath": "Choose Your Immigration Path",
+    "choosePathDesc": "Each pathway serves different goals. Review the requirements, timelines, and costs to find the best fit for your situation.",
+    "expressEntry": {
+      "title": "Express Entry (PR)",
+      "description": "Permanent residence as a skilled worker through the Comprehensive Ranking System (CRS).",
+      "usesCRS": "Yes",
+      "languageTest": "IELTS General / CELPIP / TEF / TCF",
+      "timeline": "6-12 months",
+      "cost": "$1,365 CAD + medical/biometrics",
+      "proofOfFunds": "$14,700 for 1 person, $18,300 for 2",
+      "badge": "Most Popular"
+    },
+    "studyPermit": {
+      "title": "Study Visa",
+      "description": "Study at a Canadian Designated Learning Institution (DLI) and potentially transition to PR.",
+      "usesCRS": "No",
+      "languageTest": "IELTS Academic / TOEFL / PTE / Duolingo",
+      "timeline": "4-8 weeks",
+      "cost": "$150 CAD + biometrics",
+      "proofOfFunds": "$20,635/year + tuition (+$5,000 for spouse, +$3,000 per child)"
+    },
+    "workPermit": {
+      "title": "Work Permit",
+      "description": "Work temporarily in Canada with a job offer, potentially leading to PR through Canadian experience.",
+      "usesCRS": "No",
+      "languageTest": "Optional (depends on employer)",
+      "timeline": "2-4 months",
+      "cost": "$155 CAD + biometrics",
+      "proofOfFunds": "Varies (if not employer-supported)"
+    },
+    "pnp": {
+      "title": "Provincial Nominee Program",
+      "description": "Get nominated by a Canadian province to fill local labor market needs. Often adds 600 CRS points.",
+      "usesCRS": "Yes",
+      "languageTest": "IELTS General / CELPIP / TEF",
+      "timeline": "6-18 months",
+      "cost": "$1,500-$2,300 CAD (varies by province)",
+      "proofOfFunds": "Similar to Express Entry",
+      "badge": "Provincial Focus"
+    },
+    "quebec": {
+      "title": "Quebec PR",
+      "description": "Permanent residence through Quebec's own selection system (Arrima). French language mandatory.",
+      "usesCRS": "No",
+      "languageTest": "TEF / TCF (French B2+ required)",
+      "timeline": "12-24 months",
+      "cost": "$1,100 CAD + federal PR fees",
+      "proofOfFunds": "Varies by family size",
+      "badge": "French Required"
+    },
+    "citizenship": {
+      "title": "Canadian Citizenship",
+      "description": "Become a Canadian citizen after holding permanent residence for 3+ years.",
+      "usesCRS": "No",
+      "languageTest": "IELTS GT / CELPIP (CLB 4)",
+      "timeline": "12-24 months",
+      "cost": "$630 CAD (adults), $100 (minors)",
+      "proofOfFunds": "Not required"
+    },
+    "comparison": {
+      "title": "Quick Comparison",
+      "pathway": "Pathway",
+      "usesCRS": "CRS Used?",
+      "jobOffer": "Job Offer",
+      "mainGoal": "Main Goal",
+      "bestFor": "Best For"
+    },
+    "notSure": {
+      "title": "Not Sure Which Path is Right for You?",
+      "subtitle": "Our immigration experts can help you evaluate your options and create a personalized strategy based on your qualifications, goals, and timeline.",
+      "getAssessment": "Get Personalized Assessment",
+      "bookConsultation": "Book Free Consultation"
+    }
+  },
+  "services": {
+    "title": "Our Professional Services",
+    "subtitle": "Comprehensive support from planning to settlement in Canada",
+    "informationSession": {
+      "title": "Information & Guidance Session",
+      "description": "Expert pre-arrival consultation covering job search, CV writing, avoiding scams, and essential preparation steps",
+      "features": {
+        "jobSearch": "Practical job search strategies",
+        "cvWriting": "Canadian-style CV assistance",
+        "provinceSelection": "Province & city selection guidance",
+        "qa": "On-demand Q&A"
+      },
+      "button": "Book Guidance Session"
+    },
+    "settlementSupport": {
+      "title": "Settlement Support Services",
+      "description": "Step-by-step assistance after arrival including housing, airport pickup, and essential services setup",
+      "features": {
+        "airportPickup": "Airport pickup & transportation",
+        "housing": "Housing search assistance",
+        "services": "Bank, SIM, transit card setup",
+        "registration": "SIN & health card registration"
+      },
+      "button": "Explore Services"
+    },
+    "marketplace": {
+      "title": "Marketplace Services",
+      "description": "Housing marketplace, verified service providers, and exclusive newcomer benefits",
+      "features": {
+        "housing": "Verified housing listings",
+        "providers": "Professional service providers",
+        "community": "Community access & networking",
+        "deals": "Exclusive newcomer deals"
+      },
+      "button": "Join Waitlist",
+      "badge": "Coming Soon"
+    }
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "title": "Calculate Your Canada",
+        "titleHighlight": "CRS Score in 5 Minutes",
+        "subtitle": "Get your free AI-powered personalized roadmap and professional guidance for your Canadian immigration journey",
+        "calculateButton": "Calculate CRS Score Now",
+        "exploreButton": "Explore Immigration Pathways",
+        "irccAccurate": "IRCC Accurate",
+        "privateSecure": "100% Private & Secure",
+        "fiveMinute": "5-Minute Assessment"
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "subtitle": "Four simple steps to start your Canadian immigration journey",
+        "step1": {
+          "number": "01",
+          "title": "Calculate Your Score",
+          "description": "Complete our accurate CRS calculator in just 5 minutes"
+        },
+        "step2": {
+          "number": "02",
+          "title": "Get AI-Powered Roadmap",
+          "description": "Receive a personalized improvement plan tailored to your profile"
+        },
+        "step3": {
+          "number": "03",
+          "title": "Access Your Dashboard",
+          "description": "Track your progress and manage all your immigration documents"
+        },
+        "step4": {
+          "number": "04",
+          "title": "Book Expert Guidance",
+          "description": "Get professional consultation whenever you need help"
+        }
+      },
+      "whyChooseUs": {
+        "title": "Why Choose Us",
+        "subtitle": "Professional, accurate, and trusted by thousands of newcomers",
+        "irccAccurate": {
+          "title": "IRCC Accurate",
+          "description": "Our CRS calculator follows the exact official IRCC 2025 scoring rules for complete accuracy"
+        },
+        "aiPowered": {
+          "title": "AI-Powered Insights",
+          "description": "Get personalized roadmaps generated by advanced AI tailored to your unique situation"
+        },
+        "dataPrivacy": {
+          "title": "Data Privacy",
+          "description": "Your information is encrypted and secure. We never share your data with third parties"
+        }
+      },
+      "cta": {
+        "title": "Ready to Start Your Journey?",
+        "subtitle": "Calculate your CRS score now and get your personalized roadmap in minutes",
+        "calculateButton": "Calculate CRS Score",
+        "consultationButton": "Book Consultation"
+      }
+    },
+    "about": {
+      "title": "About Us",
+      "subtitle": "Empowering candidates worldwide to achieve their Canadian immigration dreams through accurate tools, expert guidance, and comprehensive support.",
+      "ourStory": {
+        "title": "Our Story",
+        "p1": "Canada Immigration Services was founded with a simple yet powerful mission: to make Canadian immigration accessible, transparent, and achievable for candidates around the world. We recognized that the immigration process can be overwhelming, with complex requirements, ever-changing regulations, and a lack of clear, accurate information.",
+        "p2": "Our journey began when our founders, themselves immigrants to Canada, experienced firsthand the challenges and confusion that come with navigating the Canadian immigration system. They saw too many qualified candidates struggling to understand their options, calculate their CRS scores accurately, or identify the best pathway for their unique situation.",
+        "p3": "Today, we've built a comprehensive platform that combines cutting-edge technology with human expertise. Our IRCC-accurate CRS calculator, AI-powered pathway advisor, and expert consultation services have helped thousands of candidates take confident steps toward their Canadian dreams."
+      },
+      "mission": {
+        "title": "Our Mission",
+        "description": "To provide accurate, accessible, and comprehensive immigration tools and services that empower candidates to make informed decisions about their Canadian immigration journey.",
+        "belief": "We believe every qualified candidate deserves the opportunity to build a better future in Canada, and we're committed to making that journey as smooth and transparent as possible."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "description": "To become the most trusted and comprehensive platform for Canadian immigration, helping millions of candidates navigate their journey from initial assessment to successful settlement in Canada.",
+        "envision": "We envision a world where immigration is transparent, accessible, and achievable for all, regardless of where they start their journey."
+      },
+      "values": {
+        "title": "Our Core Values",
+        "subtitle": "The principles that guide everything we do",
+        "accuracy": {
+          "title": "Accuracy",
+          "description": "We maintain the highest standards of accuracy, ensuring our tools align with official IRCC guidelines."
+        },
+        "candidateFirst": {
+          "title": "Candidate-First",
+          "description": "Every feature and service is designed with candidates in mind. Your success is our success."
+        },
+        "empathy": {
+          "title": "Empathy",
+          "description": "We understand the challenges of immigration and provide compassionate, personalized support."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "We leverage cutting-edge AI technology to provide personalized roadmaps and recommendations."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "description": "We strive for excellence in every interaction, from calculations to consultations."
+        },
+        "transparency": {
+          "title": "Transparency",
+          "description": "Clear pricing, honest assessments, and transparent processes. No hidden fees or false promises."
+        },
+        "accessibility": {
+          "title": "Accessibility",
+          "description": "We believe immigration guidance should be accessible to all, regardless of background or location."
+        },
+        "resultsDriven": {
+          "title": "Results-Driven",
+          "description": "We measure our success by the success of our candidates in achieving their Canadian immigration goals."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "We're here to help! Get in touch with our team for questions, support, or consultations.",
+      "email": {
+        "title": "Email Us",
+        "description": "Send us an email anytime",
+        "address": "info@canadaimmigration.com"
+      },
+      "phone": {
+        "title": "Call Us",
+        "description": "Mon-Fri 9am-5pm EST",
+        "number": "+1 (555) 123-4567"
+      },
+      "visit": {
+        "title": "Visit Us",
+        "address": "Toronto, Ontario, Canada"
+      },
+      "hours": {
+        "title": "Business Hours",
+        "weekday": "Monday - Friday: 9:00 AM - 5:00 PM EST",
+        "saturday": "Saturday: 10:00 AM - 2:00 PM EST",
+        "sunday": "Sunday: Closed"
+      },
+      "form": {
+        "title": "Send Us a Message",
+        "name": "Full Name",
+        "email": "Email Address",
+        "subject": "Subject",
+        "message": "Message",
+        "sendButton": "Send Message",
+        "success": {
+          "title": "Message Sent!",
+          "description": "Thank you for contacting us. We'll get back to you within 24-48 hours."
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Quick answers to common questions",
+        "legalAdvice": {
+          "question": "Do you provide legal advice?",
+          "answer": "We provide general information and guidance. For official legal advice, we recommend consulting with a licensed immigration consultant or lawyer. Our consultation services connect you with qualified professionals."
+        },
+        "dataSecurity": {
+          "question": "Is my personal information secure?",
+          "answer": "Yes, we take data security seriously. All information is encrypted and stored securely. We never share your personal information with third parties without your explicit consent. See our Privacy Policy for more details."
+        }
+      }
+    },
+    "company": {
+      "title": "Your Trusted Partner in",
+      "titleHighlight": "Canadian Immigration",
+      "subtitle": "We empower candidates worldwide to achieve their Canadian immigration dreams through accurate tools, expert guidance, and comprehensive support services.",
+      "mission": {
+        "title": "Our Mission",
+        "description": "To provide accurate, accessible, and comprehensive immigration tools and services that empower candidates to make informed decisions about their Canadian immigration journey. We believe every qualified candidate deserves the opportunity to build a better future in Canada."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "description": "To become the most trusted and comprehensive platform for Canadian immigration, helping millions of candidates navigate their journey from initial assessment to successful settlement in Canada. We envision a world where immigration is transparent, accessible, and achievable for all."
+      },
+      "values": {
+        "title": "Our Core Values",
+        "subtitle": "The principles that guide everything we do",
+        "accuracy": {
+          "title": "Accuracy & Trust",
+          "description": "We maintain the highest standards of accuracy, ensuring our CRS calculator and tools align with official IRCC guidelines. Trust is earned through precision."
+        },
+        "candidateFirst": {
+          "title": "Candidate-First",
+          "description": "Every feature and service is designed with candidates in mind. Your success is our success, and we're committed to your journey every step of the way."
+        },
+        "empathy": {
+          "title": "Empathy & Support",
+          "description": "We understand the challenges of immigration. Our team provides compassionate, personalized support to help you navigate this life-changing process."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "We leverage cutting-edge AI technology and data insights to provide personalized roadmaps and recommendations that adapt to your unique situation."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "description": "We strive for excellence in every interaction, from our accurate calculations to our professional consultations and comprehensive support services."
+        },
+        "transparency": {
+          "title": "Transparency",
+          "description": "Clear pricing, honest assessments, and transparent processes. No hidden fees, no false promises—just straightforward, reliable guidance."
+        }
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Your trusted partner for Canadian immigration success. Professional guidance from CRS calculation to settlement.",
+    "services": "Services",
+    "company": "Company",
+    "contact": "Contact",
+    "copyright": "© {{year}} Canada Immigration Services. All rights reserved.",
+    "disclaimer": "Disclaimer: This CRS calculator is for reference only. Official scores are determined by IRCC."
+  },
+  "staticData": {
+    "countries": [
+      "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria",
+      "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+      "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon",
+      "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica",
+      "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador",
+      "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon",
+      "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+      "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel",
+      "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "North Korea", "South Korea",
+      "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein",
+      "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands",
+      "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
+      "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway",
+      "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland",
+      "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+      "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
+      "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland",
+      "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
+      "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu",
+      "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    ],
+    "educationLevels": [
+      "Less than High School / Secondary School",
+      "High School Diploma / Secondary School",
+      "Certificate / Diploma (1 year)",
+      "Diploma (2 years)",
+      "Advanced Diploma / Associate Degree (3 years)",
+      "Bachelor's Degree (3-4 years)",
+      "Post-Graduate Diploma / Certificate",
+      "Master's Degree",
+      "Doctoral Degree (PhD)",
+      "Professional Degree (MD, JD, DDS, etc.)"
+    ],
+    "maritalStatus": [
+      "Single",
+      "Married",
+      "Common-law",
+      "Divorced",
+      "Widowed"
+    ],
+    "provinces": [
+      "Alberta",
+      "British Columbia",
+      "Manitoba",
+      "New Brunswick",
+      "Newfoundland and Labrador",
+      "Northwest Territories",
+      "Nova Scotia",
+      "Nunavut",
+      "Ontario",
+      "Prince Edward Island",
+      "Quebec",
+      "Saskatchewan",
+      "Yukon"
+    ],
+    "frenchLevels": [
+      "No French Knowledge",
+      "A1 - Beginner",
+      "A2 - Elementary",
+      "B1 - Intermediate",
+      "B2 - Upper Intermediate (Required for Quebec)",
+      "C1 - Advanced",
+      "C2 - Proficient"
+    ]
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "loading": "Loading dashboard...",
+      "overview": "Overview",
+      "calculations": "Calculations",
+      "pathwayAdvisor": "Pathway Advisor",
+      "consultations": "Consultations",
+      "analytics": "Analytics",
+      "users": "Users",
+      "reports": "Reports"
+    }
+  },
+  "comingSoon": {
+    "informationSession": {
+      "title": "Information & Guidance Session",
+      "description": "Book your pre-arrival consultation with our immigration experts. Learn about job search, CV writing, avoiding scams, and essential preparation."
+    },
+    "settlementSupport": {
+      "title": "Settlement Support Services",
+      "description": "Comprehensive post-arrival support including airport pickup, housing search, and essential services setup."
+    },
+    "userDashboard": {
+      "title": "User Dashboard",
+      "description": "Track your CRS calculations, roadmaps, bookings, and documents all in one place."
+    },
+    "agentDashboard": {
+      "title": "Agent Dashboard",
+      "description": "Manage leads, consultations, and client communications efficiently."
+    }
+  }
+}
+
