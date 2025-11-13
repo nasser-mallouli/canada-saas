@@ -3,7 +3,7 @@ import { Card } from '../../ui/Card';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { FileText, Download } from 'lucide-react';
-import { getApiUrl } from '../../lib/api';
+import { getApiUrl } from '../../../lib/api';
 
 interface DashboardStats {
   totalPageViews: number;
