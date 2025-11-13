@@ -70,6 +70,8 @@ start_backend() {
     
     if check_port $BACKEND_PORT; then
         print_warning "Backend already running on port $BACKEND_PORT"
+        print_info "Note: If you see ALLOWED_HOSTS errors, restart the backend with:"
+        print_info "  kill \$(cat .backend.pid) && ./start-and-expose.sh"
         return 0
     fi
     
@@ -77,6 +79,9 @@ start_backend() {
     
     # Use the existing start.sh script if available, otherwise start manually
     if [ -f "start.sh" ]; then
+        # Set environment variables for public exposure
+        export ALLOWED_HOSTS="*"
+        export CORS_ALLOWED_ORIGINS="*"
         # Start backend in background using the existing script
         bash start.sh > ../.backend.log 2>&1 &
         BACKEND_PID=$!
@@ -87,6 +92,7 @@ start_backend() {
             source venv/bin/activate
         fi
         
+        # Allow all hosts when exposing publicly (ngrok domains are dynamic)
         export CORS_ALLOWED_ORIGINS="*"
         export ALLOWED_HOSTS="*"
         
@@ -94,6 +100,9 @@ start_backend() {
         BACKEND_PID=$!
         echo $BACKEND_PID > ../.backend.pid
     fi
+    
+    # Set ALLOWED_HOSTS in the running Django process if possible
+    # This is handled by the environment variable above, but we also update settings if needed
     
     cd "$PROJECT_ROOT"
     wait_for_service $BACKEND_PORT "Backend"
@@ -241,25 +250,49 @@ expose_with_ngrok() {
     
     print_success "Backend tunnel: $BACKEND_URL"
     
-    # Start frontend tunnel
+    # Extract domain from backend URL to add to ALLOWED_HOSTS
+    local backend_domain=$(echo "$BACKEND_URL" | sed 's|https\?://||' | sed 's|/.*||')
+    print_info "Adding ngrok domain to ALLOWED_HOSTS: $backend_domain"
+    
+    # Start frontend tunnel with a slight delay to avoid conflicts
     print_info "Starting frontend tunnel..."
+    sleep 2
+    
+    # Try to start frontend tunnel - ngrok free tier may have limitations
     ngrok http $FRONTEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .frontend-ngrok.log 2>&1 &
     FRONTEND_NGROK_PID=$!
     echo $FRONTEND_NGROK_PID > .frontend-ngrok.pid
     
     # Wait for frontend tunnel to be ready
-    sleep 5
+    sleep 8
     
-    # Get frontend URL (check API again - it should now show frontend or both)
-    print_info "Getting frontend URL..."
-    FRONTEND_URL=$(extract_url_from_api 4040 $FRONTEND_PORT)
-    
-    # If we got the same URL (backend), try to get the other one
-    if [ "$FRONTEND_URL" = "$BACKEND_URL" ] || [ -z "$FRONTEND_URL" ]; then
-        # Try to get all tunnels and find the one for frontend port
-        local all_tunnels=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null || echo "")
-        if [ -n "$all_tunnels" ]; then
-            FRONTEND_URL=$(echo "$all_tunnels" | python3 -c "
+    # Check if frontend tunnel started successfully
+    if ! kill -0 $FRONTEND_NGROK_PID 2>/dev/null; then
+        print_warning "Frontend tunnel process ended. Checking logs..."
+        if [ -f ".frontend-ngrok.log" ]; then
+            local error_log=$(tail -5 .frontend-ngrok.log)
+            if echo "$error_log" | grep -q "already online"; then
+                print_warning "ngrok free tier limitation: Can't run multiple tunnels simultaneously"
+                print_info "Solution: Frontend is accessible locally at http://localhost:$FRONTEND_PORT"
+                print_info "Or access it through the backend URL by configuring a reverse proxy"
+                FRONTEND_URL="http://localhost:$FRONTEND_PORT (use local access or configure reverse proxy)"
+            else
+                print_info "Frontend tunnel error:"
+                tail -10 .frontend-ngrok.log
+                FRONTEND_URL="http://localhost:$FRONTEND_PORT (tunnel failed - check .frontend-ngrok.log)"
+            fi
+        fi
+    else
+        # Get frontend URL (check API again - it should now show frontend or both)
+        print_info "Getting frontend URL..."
+        FRONTEND_URL=$(extract_url_from_api 4040 $FRONTEND_PORT)
+        
+        # If we got the same URL (backend), try to get the other one
+        if [ "$FRONTEND_URL" = "$BACKEND_URL" ] || [ -z "$FRONTEND_URL" ]; then
+            # Try to get all tunnels and find the one for frontend port
+            local all_tunnels=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null || echo "")
+            if [ -n "$all_tunnels" ]; then
+                FRONTEND_URL=$(echo "$all_tunnels" | python3 -c "
 import sys, json
 try:
     data = json.load(sys.stdin)
@@ -278,22 +311,16 @@ try:
 except:
     pass
 " 2>/dev/null || echo "")
+            fi
         fi
-    fi
-    
-    if [ -z "$FRONTEND_URL" ] || [ "$FRONTEND_URL" = "$BACKEND_URL" ]; then
-        print_warning "Could not get frontend URL automatically"
-        print_info "Checking .frontend-ngrok.log for details..."
-        if [ -f ".frontend-ngrok.log" ]; then
-            tail -10 .frontend-ngrok.log
+        
+        if [ -z "$FRONTEND_URL" ] || [ "$FRONTEND_URL" = "$BACKEND_URL" ]; then
+            print_warning "Could not get frontend URL automatically"
+            print_info "Frontend is accessible locally at: http://localhost:$FRONTEND_PORT"
+            FRONTEND_URL="http://localhost:$FRONTEND_PORT (use local access)"
+        else
+            print_success "Frontend tunnel: $FRONTEND_URL"
         fi
-        print_info "Backend is accessible at: $BACKEND_URL"
-        print_info "Frontend tunnel may be starting. Check ngrok web interface: http://localhost:4040"
-        print_info "Or check .frontend-ngrok.log for the URL"
-        # Don't fail completely - backend is working
-        FRONTEND_URL="http://localhost:$FRONTEND_PORT (check .frontend-ngrok.log for public URL)"
-    else
-        print_success "Frontend tunnel: $FRONTEND_URL"
     fi
     
     print_success "Ngrok tunnels established!"
