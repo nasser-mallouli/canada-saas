@@ -115,7 +115,65 @@ start_frontend() {
     wait_for_service $FRONTEND_PORT "Frontend"
 }
 
-# Expose with ngrok
+# Extract URL from ngrok API response
+extract_url_from_api() {
+    local api_port=$1
+    local target_port=$2
+    local max_attempts=15
+    local attempt=0
+    
+    while [ $attempt -lt $max_attempts ]; do
+        sleep 2
+        local response=$(curl -s http://localhost:$api_port/api/tunnels 2>/dev/null || echo "")
+        
+        if [ -n "$response" ]; then
+            # Try to extract URL using Python (more reliable)
+            local url=$(echo "$response" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    tunnels = data.get('tunnels', [])
+    for tunnel in tunnels:
+        config = tunnel.get('config', {})
+        addr = config.get('addr', '')
+        if '$target_port' in str(addr):
+            print(tunnel.get('public_url', ''))
+            break
+except:
+    pass
+" 2>/dev/null || echo "")
+            
+            if [ -n "$url" ]; then
+                echo "$url"
+                return 0
+            fi
+            
+            # Fallback: try to get first URL if we can't match by port
+            if [ -z "$url" ] && [ $attempt -eq 5 ]; then
+                url=$(echo "$response" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    tunnels = data.get('tunnels', [])
+    if tunnels:
+        print(tunnels[0].get('public_url', ''))
+except:
+    pass
+" 2>/dev/null || echo "")
+                if [ -n "$url" ]; then
+                    echo "$url"
+                    return 0
+                fi
+            fi
+        fi
+        
+        attempt=$((attempt + 1))
+    done
+    
+    return 1
+}
+
+# Expose with ngrok (v3 compatible - uses command-line flags)
 expose_with_ngrok() {
     print_info "🌐 Setting up public access with ngrok..."
     
@@ -139,50 +197,93 @@ expose_with_ngrok() {
         return 1
     fi
     
-    # Create ngrok config with basic auth
-    local ngrok_config=".ngrok-config.yml"
-    cat > "$ngrok_config" <<EOF
-version: "2"
-tunnels:
-  backend:
-    addr: $BACKEND_PORT
-    proto: http
-    bind_tls: true
-    auth: "$AUTH_USER:$AUTH_PASS"
-  frontend:
-    addr: $FRONTEND_PORT
-    proto: http
-    bind_tls: true
-    auth: "$AUTH_USER:$AUTH_PASS"
-EOF
+    # Kill any existing ngrok processes
+    pkill -f "ngrok http" 2>/dev/null || true
+    sleep 1
     
     print_info "Starting ngrok tunnels with authentication..."
-    ngrok start --config "$ngrok_config" --all > .ngrok.log 2>&1 &
-    NGROK_PID=$!
-    echo $NGROK_PID > .ngrok.pid
     
+    # Start backend tunnel
+    print_info "Starting backend tunnel..."
+    ngrok http $BACKEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .backend-ngrok.log 2>&1 &
+    BACKEND_NGROK_PID=$!
+    echo $BACKEND_NGROK_PID > .backend-ngrok.pid
+    
+    # Wait for backend tunnel to be ready
     sleep 5
     
-    # Get URLs from ngrok API
-    local max_attempts=10
-    local attempt=0
-    while [ $attempt -lt $max_attempts ]; do
-        sleep 2
-        local response=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null || echo "")
-        if [ -n "$response" ]; then
-            BACKEND_URL=$(echo "$response" | grep -oP '"public_url":"https://[^"]+"' | head -1 | cut -d'"' -f4 || echo "")
-            FRONTEND_URL=$(echo "$response" | grep -oP '"public_url":"https://[^"]+"' | tail -1 | cut -d'"' -f4 || echo "")
-            
-            if [ -n "$BACKEND_URL" ] && [ -n "$FRONTEND_URL" ]; then
-                print_success "Ngrok tunnels established!"
-                return 0
-            fi
-        fi
-        attempt=$((attempt + 1))
-    done
+    # Get backend URL
+    print_info "Getting backend URL..."
+    BACKEND_URL=$(extract_url_from_api 4040 $BACKEND_PORT)
     
-    print_error "Failed to get ngrok URLs. Check .ngrok.log for details"
-    return 1
+    if [ -z "$BACKEND_URL" ]; then
+        print_error "Failed to get backend URL. Check .backend-ngrok.log"
+        if [ -f ".backend-ngrok.log" ]; then
+            print_info "Last 10 lines of backend-ngrok.log:"
+            tail -10 .backend-ngrok.log
+        fi
+        return 1
+    fi
+    
+    print_success "Backend tunnel: $BACKEND_URL"
+    
+    # Start frontend tunnel
+    print_info "Starting frontend tunnel..."
+    ngrok http $FRONTEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .frontend-ngrok.log 2>&1 &
+    FRONTEND_NGROK_PID=$!
+    echo $FRONTEND_NGROK_PID > .frontend-ngrok.pid
+    
+    # Wait for frontend tunnel to be ready
+    sleep 5
+    
+    # Get frontend URL (check API again - it should now show frontend or both)
+    print_info "Getting frontend URL..."
+    FRONTEND_URL=$(extract_url_from_api 4040 $FRONTEND_PORT)
+    
+    # If we got the same URL (backend), try to get the other one
+    if [ "$FRONTEND_URL" = "$BACKEND_URL" ] || [ -z "$FRONTEND_URL" ]; then
+        # Try to get all tunnels and find the one for frontend port
+        local all_tunnels=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null || echo "")
+        if [ -n "$all_tunnels" ]; then
+            FRONTEND_URL=$(echo "$all_tunnels" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    tunnels = data.get('tunnels', [])
+    frontend_url = ''
+    for tunnel in tunnels:
+        config = tunnel.get('config', {})
+        addr = config.get('addr', '')
+        if '$FRONTEND_PORT' in str(addr):
+            frontend_url = tunnel.get('public_url', '')
+            break
+    # If still not found, get the last tunnel (assuming it's frontend)
+    if not frontend_url and len(tunnels) > 1:
+        frontend_url = tunnels[-1].get('public_url', '')
+    print(frontend_url)
+except:
+    pass
+" 2>/dev/null || echo "")
+        fi
+    fi
+    
+    if [ -z "$FRONTEND_URL" ] || [ "$FRONTEND_URL" = "$BACKEND_URL" ]; then
+        print_warning "Could not get frontend URL automatically"
+        print_info "Checking .frontend-ngrok.log for details..."
+        if [ -f ".frontend-ngrok.log" ]; then
+            tail -10 .frontend-ngrok.log
+        fi
+        print_info "Backend is accessible at: $BACKEND_URL"
+        print_info "Frontend tunnel may be starting. Check ngrok web interface: http://localhost:4040"
+        print_info "Or check .frontend-ngrok.log for the URL"
+        # Don't fail completely - backend is working
+        FRONTEND_URL="http://localhost:$FRONTEND_PORT (check .frontend-ngrok.log for public URL)"
+    else
+        print_success "Frontend tunnel: $FRONTEND_URL"
+    fi
+    
+    print_success "Ngrok tunnels established!"
+    return 0
 }
 
 # Update frontend API URL
@@ -260,7 +361,7 @@ cleanup() {
     print_info "Cleaning up..."
     
     # Kill processes
-    for pid_file in .backend.pid .frontend.pid .ngrok.pid; do
+    for pid_file in .backend.pid .frontend.pid .backend-ngrok.pid .frontend-ngrok.pid; do
         if [ -f "$pid_file" ]; then
             PID=$(cat "$pid_file" 2>/dev/null || echo "")
             if [ -n "$PID" ]; then
@@ -270,8 +371,8 @@ cleanup() {
         fi
     done
     
-    # Kill any remaining processes
-    pkill -f "ngrok start" 2>/dev/null || true
+    # Kill any remaining ngrok processes
+    pkill -f "ngrok http" 2>/dev/null || true
     
     # Cleanup config files
     rm -f .ngrok-config.yml .env.local

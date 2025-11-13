@@ -45,10 +45,14 @@ db.sqlite3-journal
 # Public exposure scripts
 .backend.pid
 .frontend.pid
+.backend-ngrok.pid
+.frontend-ngrok.pid
 .ngrok.pid
 .cloudflared.pid
 .backend.log
 .frontend.log
+.backend-ngrok.log
+.frontend-ngrok.log
 .ngrok.log
 .cloudflared.log
 .ngrok-config.yml

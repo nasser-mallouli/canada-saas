@@ -43,16 +43,31 @@ if [ -f ".frontend.pid" ]; then
     rm -f .frontend.pid
 fi
 
-# Stop ngrok
+# Stop ngrok tunnels
+if [ -f ".backend-ngrok.pid" ]; then
+    PID=$(cat .backend-ngrok.pid)
+    if kill $PID 2>/dev/null; then
+        print_success "Stopped backend ngrok tunnel (PID: $PID)"
+    fi
+    rm -f .backend-ngrok.pid
+fi
+
+if [ -f ".frontend-ngrok.pid" ]; then
+    PID=$(cat .frontend-ngrok.pid)
+    if kill $PID 2>/dev/null; then
+        print_success "Stopped frontend ngrok tunnel (PID: $PID)"
+    fi
+    rm -f .frontend-ngrok.pid
+fi
+
+# Also kill any remaining ngrok processes
 if [ -f ".ngrok.pid" ]; then
     PID=$(cat .ngrok.pid)
-    if kill $PID 2>/dev/null; then
-        print_success "Stopped ngrok (PID: $PID)"
-    fi
-    # Also kill any remaining ngrok processes
-    pkill -f ngrok || true
+    kill $PID 2>/dev/null || true
     rm -f .ngrok.pid
 fi
+
+pkill -f "ngrok http" 2>/dev/null || true
 
 # Stop cloudflared
 if [ -f ".cloudflared.pid" ]; then
