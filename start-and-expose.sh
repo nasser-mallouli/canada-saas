@@ -89,7 +89,8 @@ start_backend() {
     
     # Set environment variables for public exposure
     export ALLOWED_HOSTS="*"
-    export CORS_ALLOWED_ORIGINS="*"
+    # CORS_ALLOW_ALL_ORIGINS is used instead of CORS_ALLOWED_ORIGINS="*" (django-cors-headers doesn't accept "*")
+    export CORS_ALLOW_ALL_ORIGINS="True"
     
     # Check if venv exists and activate it
     if [ -d "venv" ]; then
