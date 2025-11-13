@@ -41,3 +41,18 @@ db.sqlite3
 db.sqlite3-journal
 /staticfiles/
 /media/
+
+# Public exposure scripts
+.backend.pid
+.frontend.pid
+.ngrok.pid
+.cloudflared.pid
+.backend.log
+.frontend.log
+.ngrok.log
+.cloudflared.log
+.ngrok-config.yml
+.cloudflared-config.yml
+.htpasswd
+.public-urls.txt
+.cloudflared-credentials.json

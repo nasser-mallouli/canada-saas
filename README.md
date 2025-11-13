@@ -172,6 +172,68 @@ canada-saas/
    - API Docs: http://localhost:8001/api/docs
    - Django Admin: http://localhost:8001/admin
 
+## Public Exposure (For Testing & Demos)
+
+Expose your application to the public internet with password protection for testing and demos.
+
+### Quick Start
+
+**One command to start everything and expose it publicly:**
+
+```bash
+./start-and-expose.sh
+```
+
+This will:
+- Start backend and frontend servers
+- Expose both publicly with password protection
+- Display all access URLs
+- Save URLs to `.public-urls.txt`
+
+### Default Credentials
+
+- **Username:** `demo`
+- **Password:** `demo123`
+
+Customize with environment variables:
+```bash
+export EXPOSE_AUTH_USER=myuser
+export EXPOSE_AUTH_PASS=mypassword
+./start-and-expose.sh
+```
+
+### Prerequisites
+
+1. **Install ngrok:**
+   ```bash
+   # macOS
+   brew install ngrok/ngrok/ngrok
+   ```
+
+2. **Authenticate ngrok:**
+   ```bash
+   ngrok config add-authtoken YOUR_TOKEN
+   # Get token from: https://dashboard.ngrok.com/get-started/your-authtoken
+   ```
+
+### Access URLs
+
+After running the script, you'll get:
+- **Frontend URL**: Publicly accessible React app (share this with testers)
+- **Backend URL**: Django API endpoint
+- **API Docs**: Interactive API documentation
+- **Admin Panel**: Django admin interface
+
+All URLs are password-protected and use HTTPS.
+
+### Full Documentation
+
+See **[PUBLIC_EXPOSE_README.md](./PUBLIC_EXPOSE_README.md)** for complete documentation including:
+- Detailed setup instructions
+- Troubleshooting guide
+- Static URL options
+- Security considerations
+
 ## API Endpoints
 
 ### Authentication
