@@ -9,11 +9,13 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // Allow external connections
     port: 5173,
-    // Allow ngrok and other tunnel domains
+    // Allow ngrok, Cloudflare Tunnel, and other tunnel domains
     allowedHosts: [
       '.ngrok-free.dev',
       '.ngrok.io',
       '.ngrok.app',
+      '.trycloudflare.com', // Cloudflare Tunnel
+      '.loca.lt', // Localtunnel
       'localhost',
       '127.0.0.1',
     ],
