@@ -281,21 +281,69 @@ expose_with_ngrok() {
     # Wait for frontend tunnel to be ready
     sleep 8
     
+    # Function to extract URL from ngrok log
+    extract_url_from_log() {
+        local log_file=$1
+        if [ -f "$log_file" ]; then
+            # Try to find URL in log (ngrok prints it in various formats)
+            local url=$(grep -oP 'https://[a-z0-9-]+\.ngrok-free\.dev' "$log_file" 2>/dev/null | head -1 || echo "")
+            if [ -z "$url" ]; then
+                # Try alternative format
+                url=$(grep -oP 'https://[a-z0-9-]+\.ngrok\.io' "$log_file" 2>/dev/null | head -1 || echo "")
+            fi
+            if [ -z "$url" ]; then
+                # Try to find in "Forwarding" line
+                url=$(grep -i "forwarding" "$log_file" 2>/dev/null | grep -oP 'https://[^\s]+' | head -1 || echo "")
+            fi
+            echo "$url"
+        fi
+    }
+    
     # Check if frontend tunnel started successfully
     if ! kill -0 $FRONTEND_NGROK_PID 2>/dev/null; then
-        print_warning "Frontend tunnel process ended. Checking logs..."
+        print_warning "Frontend tunnel process ended. Checking logs for URL..."
+        
+        # Try to extract URL from log file
+        local log_url=$(extract_url_from_log ".frontend-ngrok.log")
+        
         if [ -f ".frontend-ngrok.log" ]; then
-            local error_log=$(tail -5 .frontend-ngrok.log)
-            if echo "$error_log" | grep -q "already online"; then
+            local error_log=$(tail -10 .frontend-ngrok.log)
+            
+            if [ -n "$log_url" ]; then
+                print_success "Found frontend URL in logs: $log_url"
+                FRONTEND_URL="$log_url"
+            elif echo "$error_log" | grep -q "already online"; then
                 print_warning "ngrok free tier limitation: Can't run multiple tunnels simultaneously"
-                print_info "Solution: Frontend is accessible locally at http://localhost:$FRONTEND_PORT"
-                print_info "Or access it through the backend URL by configuring a reverse proxy"
-                FRONTEND_URL="http://localhost:$FRONTEND_PORT (use local access or configure reverse proxy)"
+                print_info "Checking if frontend tunnel is accessible via ngrok web interface..."
+                
+                # Try to get from API one more time (sometimes it shows up)
+                sleep 2
+                local api_url=$(extract_url_from_api 4040 $FRONTEND_PORT)
+                if [ -n "$api_url" ] && [ "$api_url" != "$BACKEND_URL" ]; then
+                    FRONTEND_URL="$api_url"
+                    print_success "Frontend tunnel found via API: $FRONTEND_URL"
+                else
+                    print_info "Frontend tunnel not available. Showing log contents:"
+                    echo "$error_log"
+                    print_info ""
+                    print_info "Solution: Frontend is accessible locally at http://localhost:$FRONTEND_PORT"
+                    print_info "Or check ngrok web interface: http://localhost:4040"
+                    FRONTEND_URL="http://localhost:$FRONTEND_PORT (check .frontend-ngrok.log or http://localhost:4040)"
+                fi
             else
-                print_info "Frontend tunnel error:"
-                tail -10 .frontend-ngrok.log
-                FRONTEND_URL="http://localhost:$FRONTEND_PORT (tunnel failed - check .frontend-ngrok.log)"
+                print_info "Frontend tunnel error. Showing log contents:"
+                echo "$error_log"
+                print_info ""
+                print_info "Trying to extract URL from log..."
+                if [ -n "$log_url" ]; then
+                    FRONTEND_URL="$log_url"
+                    print_success "Frontend URL from log: $FRONTEND_URL"
+                else
+                    FRONTEND_URL="http://localhost:$FRONTEND_PORT (tunnel failed - check .frontend-ngrok.log)"
+                fi
             fi
+        else
+            FRONTEND_URL="http://localhost:$FRONTEND_PORT (no log file found)"
         fi
     else
         # Get frontend URL (check API again - it should now show frontend or both)
@@ -329,12 +377,33 @@ except:
             fi
         fi
         
+        # If still not found, try extracting from log
         if [ -z "$FRONTEND_URL" ] || [ "$FRONTEND_URL" = "$BACKEND_URL" ]; then
-            print_warning "Could not get frontend URL automatically"
-            print_info "Frontend is accessible locally at: http://localhost:$FRONTEND_PORT"
-            FRONTEND_URL="http://localhost:$FRONTEND_PORT (use local access)"
+            print_info "Trying to extract frontend URL from log file..."
+            local log_url=$(extract_url_from_log ".frontend-ngrok.log")
+            if [ -n "$log_url" ] && [ "$log_url" != "$BACKEND_URL" ]; then
+                FRONTEND_URL="$log_url"
+                print_success "Frontend URL extracted from log: $FRONTEND_URL"
+            else
+                print_warning "Could not get frontend URL automatically"
+                print_info "Frontend is accessible locally at: http://localhost:$FRONTEND_PORT"
+                print_info "Check ngrok web interface: http://localhost:4040"
+                print_info "Or check .frontend-ngrok.log for the URL"
+                FRONTEND_URL="http://localhost:$FRONTEND_PORT (check .frontend-ngrok.log or http://localhost:4040)"
+            fi
         else
             print_success "Frontend tunnel: $FRONTEND_URL"
+        fi
+    fi
+    
+    # Final check: if we still don't have a proper URL, show log contents
+    if echo "$FRONTEND_URL" | grep -q "localhost\|check\|failed"; then
+        print_info ""
+        print_info "📋 Frontend tunnel log (last 15 lines):"
+        if [ -f ".frontend-ngrok.log" ]; then
+            tail -15 .frontend-ngrok.log | sed 's/^/  /'
+        else
+            print_warning "  Log file not found"
         fi
     fi
     
