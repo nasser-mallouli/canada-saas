@@ -83,15 +83,51 @@ cloudflared tunnel --url http://localhost:$BACKEND_PORT > .backend-cloudflare.lo
 BACKEND_TUNNEL_PID=$!
 echo $BACKEND_TUNNEL_PID > .backend-cloudflare.pid
 
-sleep 5
+print_info "Waiting for backend tunnel to establish (this may take 10-15 seconds)..."
+sleep 10
 
-# Extract backend URL
-BACKEND_URL=$(grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' .backend-cloudflare.log 2>/dev/null | head -1 || echo "")
+# Try to extract backend URL with multiple patterns and retries
+BACKEND_URL=""
+for i in {1..15}; do
+    # Try different patterns to match the URL
+    # Pattern 1: Standard URL format
+    BACKEND_URL=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' .backend-cloudflare.log 2>/dev/null | head -1 || echo "")
+    
+    if [ -n "$BACKEND_URL" ]; then
+        break
+    fi
+    
+    # Pattern 2: Look in recent lines only
+    BACKEND_URL=$(tail -20 .backend-cloudflare.log | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' 2>/dev/null | head -1 || echo "")
+    
+    if [ -n "$BACKEND_URL" ]; then
+        break
+    fi
+    
+    # Pattern 3: Look for "trycloudflare.com" anywhere and construct URL
+    DOMAIN=$(grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' .backend-cloudflare.log 2>/dev/null | head -1 || echo "")
+    if [ -n "$DOMAIN" ]; then
+        BACKEND_URL="https://$DOMAIN"
+        break
+    fi
+    
+    sleep 2
+    if [ $((i % 3)) -eq 0 ]; then
+        print_info "Waiting for backend URL... (attempt $i/15)"
+    fi
+done
 
 if [ -z "$BACKEND_URL" ]; then
-    print_error "Failed to get backend URL from Cloudflare Tunnel"
-    print_info "Backend tunnel log:"
-    tail -20 .backend-cloudflare.log
+    print_error "Failed to get backend URL from Cloudflare Tunnel after 40 seconds"
+    print_info "Backend tunnel log (full log):"
+    cat .backend-cloudflare.log
+    print_info ""
+    print_info "The tunnel might still be starting. You can:"
+    print_info "  1. Check the log manually: tail -f .backend-cloudflare.log"
+    print_info "  2. Run the tunnel manually to see the URL:"
+    print_info "     cloudflared tunnel --url http://localhost:$BACKEND_PORT"
+    print_info "  3. Look for the URL in the output above and set it manually:"
+    print_info "     echo 'VITE_API_URL=https://your-backend-url.trycloudflare.com' > .env.local"
     exit 1
 fi
 
@@ -103,15 +139,47 @@ cloudflared tunnel --url http://localhost:$FRONTEND_PORT > .frontend-cloudflare.
 FRONTEND_TUNNEL_PID=$!
 echo $FRONTEND_TUNNEL_PID > .frontend-cloudflare.pid
 
-sleep 5
+print_info "Waiting for frontend tunnel to establish (this may take 10-15 seconds)..."
+sleep 10
 
-# Extract frontend URL
-FRONTEND_URL=$(grep -oP 'https://[a-z0-9-]+\.trycloudflare\.com' .frontend-cloudflare.log 2>/dev/null | head -1 || echo "")
+# Try to extract frontend URL with multiple patterns and retries
+FRONTEND_URL=""
+for i in {1..15}; do
+    # Try different patterns to match the URL
+    # Pattern 1: Standard URL format
+    FRONTEND_URL=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' .frontend-cloudflare.log 2>/dev/null | head -1 || echo "")
+    
+    if [ -n "$FRONTEND_URL" ]; then
+        break
+    fi
+    
+    # Pattern 2: Look in recent lines only
+    FRONTEND_URL=$(tail -20 .frontend-cloudflare.log | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' 2>/dev/null | head -1 || echo "")
+    
+    if [ -n "$FRONTEND_URL" ]; then
+        break
+    fi
+    
+    # Pattern 3: Look for "trycloudflare.com" anywhere and construct URL
+    DOMAIN=$(grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' .frontend-cloudflare.log 2>/dev/null | head -1 || echo "")
+    if [ -n "$DOMAIN" ]; then
+        FRONTEND_URL="https://$DOMAIN"
+        break
+    fi
+    
+    sleep 2
+    if [ $((i % 3)) -eq 0 ]; then
+        print_info "Waiting for frontend URL... (attempt $i/15)"
+    fi
+done
 
 if [ -z "$FRONTEND_URL" ]; then
-    print_error "Failed to get frontend URL from Cloudflare Tunnel"
-    print_info "Frontend tunnel log:"
-    tail -20 .frontend-cloudflare.log
+    print_error "Failed to get frontend URL from Cloudflare Tunnel after 40 seconds"
+    print_info "Frontend tunnel log (full log):"
+    cat .frontend-cloudflare.log
+    print_info ""
+    print_info "The tunnel might still be starting. Check the log manually:"
+    print_info "  tail -f .frontend-cloudflare.log"
     exit 1
 fi
 
