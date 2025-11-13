@@ -27,20 +27,28 @@ fi
 source venv/bin/activate
 
 print_info "Creating Django admin/superuser..."
+print_info ""
 print_info "You'll be prompted to enter:"
-print_info "  - Username (or press Enter to use email)"
-print_info "  - Email address"
+print_info "  - Username (e.g., 'admin' or your email)"
+print_info "  - Email address (optional but recommended)"
 print_info "  - Password (twice for confirmation)"
+print_info ""
+print_warning "⚠️  Remember these credentials - you'll need them to log into /admin"
 echo ""
 
 # Create superuser
 python manage.py createsuperuser
 
-print_success "Admin user created!"
 print_info ""
-print_info "You can now access the admin dashboard at:"
-print_info "  Local: http://localhost:8001/admin"
-print_info "  Public: https://your-ngrok-url.ngrok-free.dev/admin"
+print_success "✅ Admin user created successfully!"
+print_info ""
+print_warning "📝 IMPORTANT: Save these credentials!"
+print_info "   Username: [the username you just entered]"
+print_info "   Password: [the password you just entered]"
+print_info ""
+print_info "You can now log into the admin dashboard at:"
+print_info "   Local: http://localhost:8001/admin"
+print_info "   Public: https://your-ngrok-url.ngrok-free.dev/admin"
 print_info ""
 print_info "Use the credentials you just created to log in."
 

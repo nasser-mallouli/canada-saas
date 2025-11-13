@@ -40,6 +40,22 @@ canada-saas/
 
 ## Local Development Setup
 
+### Quick Setup on New Machine
+
+**For setting up on a completely new machine, see [SETUP_NEW_MACHINE.md](./SETUP_NEW_MACHINE.md)**
+
+**Quick start:**
+```bash
+# 1. Set up database and migrations
+./setup-database.sh
+
+# 2. Create admin user (optional)
+./create-admin-user.sh
+
+# 3. Start everything
+./start-and-expose.sh
+```
+
 ### Backend Setup
 
 1. **Navigate to backend directory:**
@@ -82,8 +98,24 @@ canada-saas/
    CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
    ```
 
-6. **Create and run migrations:**
+6. **Set up database and run migrations:**
+   
+   **Option 1: Use the setup script (recommended for new machines):**
    ```bash
+   ./setup-database.sh
+   ```
+   
+   This script will:
+   - Create virtual environment if needed
+   - Install dependencies
+   - Create all migrations
+   - Apply migrations to database
+   
+   **Option 2: Manual setup:**
+   ```bash
+   cd backend
+   source venv/bin/activate
+   
    # Create migrations from models (creates all 13 database tables)
    python manage.py makemigrations core
    
@@ -97,10 +129,23 @@ canada-saas/
    - pathway_advisor_submissions, marketplace_waitlist, agent_notes
    - pdf_generations, page_views, button_clicks
 
-7. **Create superuser (optional):**
+7. **Create superuser (required for admin dashboard):**
    ```bash
+   # Easy way:
+   ./create-admin-user.sh
+   
+   # Or manually:
+   cd backend
+   source venv/bin/activate
    python manage.py createsuperuser
    ```
+   
+   **Important:** You'll be prompted to enter:
+   - Username (e.g., `admin`)
+   - Email address (optional)
+   - Password (enter twice)
+   
+   **Save these credentials** - you'll need them to log into `/admin`!
 
 8. **Start development server:**
    

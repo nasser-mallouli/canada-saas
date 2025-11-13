@@ -1,4 +1,28 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+// Detect API URL dynamically based on current hostname
+export function getApiUrl(): string {
+  // If explicitly set via environment variable, use that
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // If running in browser, detect the current hostname
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    const port = '8001';
+    
+    // If accessing via network IP or domain (not localhost), use same hostname for API
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      // Use same protocol and hostname, but port 8001 for backend
+      return `${protocol}//${hostname}:${port}`;
+    }
+  }
+
+  // Default to localhost for local development
+  return 'http://localhost:8001';
+}
+
+const API_URL = getApiUrl();
 
 interface RequestOptions extends RequestInit {
   skipAuth?: boolean;

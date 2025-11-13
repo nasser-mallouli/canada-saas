@@ -2,6 +2,20 @@
 
 This guide explains how to expose your Canada SaaS application to the public internet with password protection for testing and demos.
 
+## 🆓 Free Alternatives to ngrok
+
+If you prefer free alternatives to ngrok, see **[FREE_TUNNEL_ALTERNATIVES.md](./FREE_TUNNEL_ALTERNATIVES.md)** for options like:
+- **Localtunnel** - Easiest, no signup (use `./start-and-expose-localtunnel.sh`)
+- **Cloudflare Tunnel** - Best for static domains
+- **Serveo** - SSH-based, no installation
+- And more!
+
+**Quick start with Localtunnel (no signup, no password):**
+```bash
+npm install -g localtunnel
+./start-and-expose-localtunnel.sh
+```
+
 ## 🚀 Quick Start (One Command)
 
 The easiest way to start everything and expose it publicly:
@@ -93,19 +107,36 @@ export EXPOSE_AUTH_PASS=yourpassword123  # Must be 8-128 characters
 
 **Note:** If your password is less than 8 characters, the script will show an error and suggest using a longer password.
 
-## 🔑 Two Types of Credentials
+## 🔑 Three Types of Credentials
 
 ### 1. ngrok Basic Auth (For Public URLs)
 These credentials protect your exposed URLs:
 - **Username:** `demo` (default)
 - **Password:** `DemoPass123!` (default)
 - **Used for:** Accessing frontend and backend ngrok URLs
+- **When prompted:** Browser will ask for these when accessing ngrok URLs
 
-### 2. Django Admin Dashboard (For `/admin`)
-These are separate credentials for the Django admin panel:
+### 2. Frontend Admin Dashboard (For Frontend `/admin`)
+This is the React admin interface accessible at `https://your-frontend-url.ngrok-free.dev/admin`:
+- **Email/Password:** You create these yourself (NO default credentials)
+- **How to create:**
+  - **Option A:** Visit the frontend `/admin` page and click "Create Admin Account" (first admin only)
+  - **Option B:** Create via Django command (see below)
+- **Used for:** Logging into the frontend admin dashboard
+- **Note:** The first admin can be created through the UI. After that, you need an existing admin to create more.
+
+### 3. Django Admin Panel (For Backend `/admin`)
+This is the Django admin interface accessible at `https://your-backend-url.ngrok-free.dev/admin`:
+- **Username/Password:** Same as Frontend Admin (they use the same User model)
 - **How to create:** Run `./create-admin-user.sh` or `cd backend && python manage.py createsuperuser`
-- **Used for:** Logging into the admin dashboard at `/admin`
-- **Note:** You need to create this separately - it's not created automatically
+- **Used for:** Logging into the Django admin panel
+- **Note:** You need to create this separately - it's **NOT created automatically**
+
+**Important:** 
+- There are **NO default credentials** for admin login
+- You must create an admin account first
+- The same credentials work for both frontend and backend admin panels
+- Save your credentials - you'll need them every time!
 
 ## 📍 Access URLs
 

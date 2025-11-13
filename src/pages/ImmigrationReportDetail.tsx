@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Download, User, Mail, Phone, Calendar, FileText, XCircle, ExternalLink } from 'lucide-react';
-import { api } from '../lib/api';
+import { api, getApiUrl } from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -67,7 +67,7 @@ export function ImmigrationReportDetail() {
       // Construct full URL if relative
       const pdfUrl = report.pdf_url.startsWith('http') 
         ? report.pdf_url 
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:8001'}/${report.pdf_url}`;
+        : `${getApiUrl()}/${report.pdf_url}`;
       // Open PDF in new tab for download
       window.open(pdfUrl, '_blank');
     } else {

@@ -121,6 +121,6 @@ echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-# Start the server on port 8001
-python manage.py runserver 8001
+# Start the server on port 8001, binding to all interfaces (0.0.0.0) for network access
+python manage.py runserver 0.0.0.0:8001
 

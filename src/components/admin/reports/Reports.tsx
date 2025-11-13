@@ -3,6 +3,7 @@ import { Card } from '../../ui/Card';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { FileText, Download } from 'lucide-react';
+import { getApiUrl } from '../../lib/api';
 
 interface DashboardStats {
   totalPageViews: number;
@@ -96,7 +97,7 @@ export function Reports({ stats }: ReportsProps) {
                             onClick={() => {
                               const pdfUrl = report.pdf_url.startsWith('http') 
                                 ? report.pdf_url 
-                                : `${import.meta.env.VITE_API_URL || 'http://localhost:8001'}/${report.pdf_url}`;
+                                : `${getApiUrl()}/${report.pdf_url}`;
                               window.open(pdfUrl, '_blank');
                             }}
                           >

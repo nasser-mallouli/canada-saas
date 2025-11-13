@@ -114,9 +114,18 @@ start_backend() {
         }
     fi
     
-    # Run migrations (quick check)
-    print_info "Checking database..."
-    python manage.py migrate --no-input > ../.backend-migrate.log 2>&1 || true
+    # Run migrations (ensure database is set up)
+    print_info "Setting up database..."
+    print_info "Creating migrations (if needed)..."
+    python manage.py makemigrations core --no-input > ../.backend-makemigrations.log 2>&1 || true
+    
+    print_info "Applying migrations..."
+    python manage.py migrate --no-input > ../.backend-migrate.log 2>&1 || {
+        print_error "Migration failed. Run ./setup-database.sh first"
+        print_info "Migration log:"
+        tail -10 ../.backend-migrate.log | sed 's/^/  /'
+        return 1
+    }
     
     # Start the server
     print_info "Starting Django server on port $BACKEND_PORT..."

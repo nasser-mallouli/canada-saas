@@ -231,7 +231,9 @@ export function ResultsPage({ score, userInfo, calculationData, onStartOver }: R
             pdfUrl = '/' + pdfUrl;
           }
           // Construct full URL with API base URL
-          const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+          // Use dynamic API URL detection
+          const { getApiUrl } = await import('../../lib/api');
+          const apiBaseUrl = getApiUrl();
           pdfUrl = `${apiBaseUrl}${pdfUrl}`;
         }
         
