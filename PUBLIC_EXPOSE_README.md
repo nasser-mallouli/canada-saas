@@ -93,6 +93,20 @@ export EXPOSE_AUTH_PASS=yourpassword123  # Must be 8-128 characters
 
 **Note:** If your password is less than 8 characters, the script will show an error and suggest using a longer password.
 
+## 🔑 Two Types of Credentials
+
+### 1. ngrok Basic Auth (For Public URLs)
+These credentials protect your exposed URLs:
+- **Username:** `demo` (default)
+- **Password:** `DemoPass123!` (default)
+- **Used for:** Accessing frontend and backend ngrok URLs
+
+### 2. Django Admin Dashboard (For `/admin`)
+These are separate credentials for the Django admin panel:
+- **How to create:** Run `./create-admin-user.sh` or `cd backend && python manage.py createsuperuser`
+- **Used for:** Logging into the admin dashboard at `/admin`
+- **Note:** You need to create this separately - it's not created automatically
+
 ## 📍 Access URLs
 
 After running the script, you'll see output like this:

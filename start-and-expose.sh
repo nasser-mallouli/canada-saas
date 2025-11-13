@@ -145,13 +145,23 @@ start_backend() {
 start_frontend() {
     print_info "🚀 Starting frontend..."
     
+    # Check if frontend is running and restart if needed (to pick up vite.config changes)
     if check_port $FRONTEND_PORT; then
         print_warning "Frontend already running on port $FRONTEND_PORT"
-        return 0
+        print_info "Restarting frontend to ensure ngrok host is allowed..."
+        if [ -f ".frontend.pid" ]; then
+            local old_pid=$(cat .frontend.pid 2>/dev/null || echo "")
+            if [ -n "$old_pid" ]; then
+                kill $old_pid 2>/dev/null || true
+                sleep 2
+            fi
+        fi
+        pkill -f "vite" 2>/dev/null || true
+        sleep 1
     fi
     
-    # Start frontend
-    npm run dev > .frontend.log 2>&1 &
+    # Start frontend with host 0.0.0.0 to allow external connections
+    HOST=0.0.0.0 npm run dev > .frontend.log 2>&1 &
     FRONTEND_PID=$!
     echo $FRONTEND_PID > .frontend.pid
     
@@ -520,8 +530,6 @@ update_frontend_api_url() {
 save_urls() {
     cat > "$URLS_FILE" <<EOF
 # Public URLs - Generated on $(date)
-# Username: $AUTH_USER
-# Password: $AUTH_PASS
 
 FRONTEND_URL=$FRONTEND_URL
 BACKEND_URL=$BACKEND_URL
@@ -532,9 +540,22 @@ BACKEND_URL=$BACKEND_URL
 # - API Docs: $BACKEND_URL/api/docs
 # - Admin Panel: $BACKEND_URL/admin
 
-# Authentication:
-# Username: $AUTH_USER
-# Password: $AUTH_PASS
+# ============================================
+# 🔐 CREDENTIALS
+# ============================================
+
+# 1. ngrok Basic Auth (for accessing public URLs):
+#    Username: $AUTH_USER
+#    Password: $AUTH_PASS
+#    Use these to access the frontend and backend URLs above
+
+# 2. Django Admin Dashboard (for /admin):
+#    You need to create a superuser first:
+#    Run: ./create-admin-user.sh
+#    Or: cd backend && python manage.py createsuperuser
+#    Then use those credentials to log into $BACKEND_URL/admin
+
+# ============================================
 
 # To stop everything, press Ctrl+C or run: ./stop-expose.sh
 EOF
@@ -558,8 +579,14 @@ display_results() {
     echo ""
     print_info "🔐 Authentication:"
     echo ""
+    print_info "For ngrok URLs (frontend & backend access):"
     echo -e "  ${YELLOW}Username:${NC} $AUTH_USER"
     echo -e "  ${YELLOW}Password:${NC} $AUTH_PASS"
+    echo ""
+    print_info "For Django Admin Dashboard ($BACKEND_URL/admin):"
+    echo -e "  ${YELLOW}Note:${NC} You need to create a Django superuser first"
+    echo -e "  ${YELLOW}Run:${NC} ./create-admin-user.sh"
+    echo -e "  ${YELLOW}Or:${NC} cd backend && python manage.py createsuperuser"
     echo ""
     print_info "💡 Local Access (no password needed):"
     echo ""
