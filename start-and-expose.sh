@@ -87,40 +87,57 @@ start_backend() {
     
     cd "$PROJECT_ROOT/backend"
     
-    # Use the existing start.sh script if available, otherwise start manually
-    if [ -f "start.sh" ]; then
-        # Set environment variables for public exposure
-        export ALLOWED_HOSTS="*"
-        export CORS_ALLOWED_ORIGINS="*"
-        # Modify start.sh to run in background and on correct port
-        # We'll run manage.py directly to have better control
-        if [ -d "venv" ]; then
-            source venv/bin/activate
-        fi
-        # Make sure we're using the venv python
-        python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
-        BACKEND_PID=$!
-        echo $BACKEND_PID > ../.backend.pid
+    # Set environment variables for public exposure
+    export ALLOWED_HOSTS="*"
+    export CORS_ALLOWED_ORIGINS="*"
+    
+    # Check if venv exists and activate it
+    if [ -d "venv" ]; then
+        source venv/bin/activate
+        print_info "Virtual environment activated"
     else
-        # Manual start
-        if [ -d "venv" ]; then
-            source venv/bin/activate
-        fi
-        
-        # Allow all hosts when exposing publicly (ngrok domains are dynamic)
-        export CORS_ALLOWED_ORIGINS="*"
-        export ALLOWED_HOSTS="*"
-        
-        python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
-        BACKEND_PID=$!
-        echo $BACKEND_PID > ../.backend.pid
+        print_warning "Virtual environment not found. Please run backend setup first:"
+        print_info "  cd backend && ./start.sh"
+        cd "$PROJECT_ROOT"
+        return 1
     fi
     
-    # Set ALLOWED_HOSTS in the running Django process if possible
-    # This is handled by the environment variable above, but we also update settings if needed
+    # Verify Python and Django are available
+    if ! python -c "import django" 2>/dev/null; then
+        print_error "Django not found in virtual environment"
+        print_info "Installing dependencies..."
+        pip install -r requirements.txt -q || {
+            print_error "Failed to install dependencies. Check .backend.log"
+            cd "$PROJECT_ROOT"
+            return 1
+        }
+    fi
+    
+    # Run migrations (quick check)
+    print_info "Checking database..."
+    python manage.py migrate --no-input > ../.backend-migrate.log 2>&1 || true
+    
+    # Start the server
+    print_info "Starting Django server on port $BACKEND_PORT..."
+    python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo $BACKEND_PID > ../.backend.pid
     
     cd "$PROJECT_ROOT"
-    wait_for_service $BACKEND_PORT "Backend"
+    
+    # Wait for backend to start
+    if ! wait_for_service $BACKEND_PORT "Backend"; then
+        print_error "Backend failed to start. Checking logs..."
+        if [ -f ".backend.log" ]; then
+            print_info "Last 20 lines of backend.log:"
+            tail -20 .backend.log | sed 's/^/  /'
+        fi
+        if [ -f ".backend-migrate.log" ]; then
+            print_info "Migration log:"
+            tail -10 .backend-migrate.log | sed 's/^/  /'
+        fi
+        return 1
+    fi
 }
 
 # Start frontend
