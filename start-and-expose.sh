@@ -158,6 +158,24 @@ start_frontend() {
     wait_for_service $FRONTEND_PORT "Frontend"
 }
 
+# Function to extract URL from ngrok log
+extract_url_from_log() {
+    local log_file=$1
+    if [ -f "$log_file" ]; then
+        # Try to find URL in log (ngrok prints it in various formats)
+        local url=$(grep -oP 'https://[a-z0-9-]+\.ngrok-free\.dev' "$log_file" 2>/dev/null | head -1 || echo "")
+        if [ -z "$url" ]; then
+            # Try alternative format
+            url=$(grep -oP 'https://[a-z0-9-]+\.ngrok\.io' "$log_file" 2>/dev/null | head -1 || echo "")
+        fi
+        if [ -z "$url" ]; then
+            # Try to find in "Forwarding" line
+            url=$(grep -i "forwarding" "$log_file" 2>/dev/null | grep -oP 'https://[^\s]+' | head -1 || echo "")
+        fi
+        echo "$url"
+    fi
+}
+
 # Extract URL from ngrok API response
 extract_url_from_api() {
     local api_port=$1
@@ -258,100 +276,125 @@ expose_with_ngrok() {
     sleep 1
     
     print_info "Starting ngrok tunnels with authentication..."
+    print_info "Priority: Frontend (React app) will be exposed publicly"
     
-    # Start backend tunnel
-    print_info "Starting backend tunnel..."
-    ngrok http $BACKEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .backend-ngrok.log 2>&1 &
+    # Start FRONTEND tunnel first (this is what users want to access)
+    print_info "Starting frontend tunnel (React app)..."
+    ngrok http $FRONTEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .frontend-ngrok.log 2>&1 &
+    FRONTEND_NGROK_PID=$!
+    echo $FRONTEND_NGROK_PID > .frontend-ngrok.pid
+    
+    # Wait for frontend tunnel to be ready
+    sleep 5
+    
+    # Get frontend URL
+    print_info "Getting frontend URL..."
+    FRONTEND_URL=$(extract_url_from_api 4040 $FRONTEND_PORT)
+    
+    if [ -z "$FRONTEND_URL" ]; then
+        # Try extracting from log
+        local log_url=$(grep -oP 'https://[a-z0-9-]+\.ngrok-free\.dev' .frontend-ngrok.log 2>/dev/null | head -1 || echo "")
+        if [ -n "$log_url" ]; then
+            FRONTEND_URL="$log_url"
+        else
+            print_error "Failed to get frontend URL. Check .frontend-ngrok.log"
+            if [ -f ".frontend-ngrok.log" ]; then
+                print_info "Last 10 lines of frontend-ngrok.log:"
+                tail -10 .frontend-ngrok.log
+            fi
+            return 1
+        fi
+    fi
+    
+    print_success "Frontend tunnel: $FRONTEND_URL"
+    
+    # Now start backend tunnel (needed for API calls)
+    print_info "Starting backend tunnel (for API)..."
+    sleep 2
+    
+    # Try using pooling-enabled to allow both tunnels
+    ngrok http $BACKEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" --pooling-enabled > .backend-ngrok.log 2>&1 &
     BACKEND_NGROK_PID=$!
     echo $BACKEND_NGROK_PID > .backend-ngrok.pid
     
-    # Wait for backend tunnel to be ready
+    # Wait for backend tunnel
     sleep 5
     
     # Get backend URL
     print_info "Getting backend URL..."
     BACKEND_URL=$(extract_url_from_api 4040 $BACKEND_PORT)
     
+    # If we got frontend URL again, try to find backend in all tunnels
+    if [ "$BACKEND_URL" = "$FRONTEND_URL" ] || [ -z "$BACKEND_URL" ]; then
+        local all_tunnels=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null || echo "")
+        if [ -n "$all_tunnels" ]; then
+            BACKEND_URL=$(echo "$all_tunnels" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    tunnels = data.get('tunnels', [])
+    for tunnel in tunnels:
+        config = tunnel.get('config', {})
+        addr = config.get('addr', '')
+        if '$BACKEND_PORT' in str(addr):
+            print(tunnel.get('public_url', ''))
+            break
+except:
+    pass
+" 2>/dev/null || echo "")
+        fi
+    fi
+    
     if [ -z "$BACKEND_URL" ]; then
-        print_error "Failed to get backend URL. Check .backend-ngrok.log"
+        print_warning "Backend tunnel may not have started (ngrok free tier limitation)"
+        print_info "Frontend will use local backend. Checking logs..."
         if [ -f ".backend-ngrok.log" ]; then
-            print_info "Last 10 lines of backend-ngrok.log:"
             tail -10 .backend-ngrok.log
         fi
-        return 1
-    fi
-    
-    print_success "Backend tunnel: $BACKEND_URL"
-    
-    # Extract domain from backend URL to add to ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
-    local backend_domain=$(echo "$BACKEND_URL" | sed 's|https\?://||' | sed 's|/.*||')
-    print_info "Adding ngrok domain to CSRF_TRUSTED_ORIGINS: $backend_domain"
-    
-    # Add to CSRF_TRUSTED_ORIGINS (needed for admin panel and forms)
-    # Note: We need to restart the backend for this to take effect
-    export CSRF_TRUSTED_ORIGINS="$BACKEND_URL,https://$backend_domain"
-    
-    # Restart backend with CSRF_TRUSTED_ORIGINS set
-    print_info "Restarting backend to apply CSRF_TRUSTED_ORIGINS..."
-    if [ -f ".backend.pid" ]; then
-        local old_backend_pid=$(cat .backend.pid 2>/dev/null || echo "")
-        if [ -n "$old_backend_pid" ]; then
-            kill $old_backend_pid 2>/dev/null || true
-            sleep 2
-        fi
-    fi
-    
-    # Restart backend with updated environment
-    cd "$PROJECT_ROOT/backend"
-    if [ -d "venv" ]; then
-        source venv/bin/activate
-    fi
-    export ALLOWED_HOSTS="*"
-    export CORS_ALLOW_ALL_ORIGINS="True"
-    python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
-    BACKEND_PID=$!
-    echo $BACKEND_PID > ../.backend.pid
-    cd "$PROJECT_ROOT"
-    
-    # Wait for backend to be ready again
-    sleep 3
-    if ! check_port $BACKEND_PORT; then
-        print_warning "Backend restart may have failed, but continuing..."
+        # Use local backend URL for frontend
+        BACKEND_URL="http://localhost:$BACKEND_PORT"
+        print_info "Using local backend URL for frontend: $BACKEND_URL"
     else
-        print_success "Backend restarted with CSRF settings"
+        print_success "Backend tunnel: $BACKEND_URL"
+        
+        # Extract domain from backend URL for CSRF
+        local backend_domain=$(echo "$BACKEND_URL" | sed 's|https\?://||' | sed 's|/.*||')
+        print_info "Adding backend domain to CSRF_TRUSTED_ORIGINS: $backend_domain"
+        export CSRF_TRUSTED_ORIGINS="$BACKEND_URL,https://$backend_domain"
+        
+        # Restart backend with CSRF_TRUSTED_ORIGINS set
+        print_info "Restarting backend to apply CSRF_TRUSTED_ORIGINS..."
+        if [ -f ".backend.pid" ]; then
+            local old_backend_pid=$(cat .backend.pid 2>/dev/null || echo "")
+            if [ -n "$old_backend_pid" ]; then
+                kill $old_backend_pid 2>/dev/null || true
+                sleep 2
+            fi
+        fi
+        
+        # Restart backend with updated environment
+        cd "$PROJECT_ROOT/backend"
+        if [ -d "venv" ]; then
+            source venv/bin/activate
+        fi
+        export ALLOWED_HOSTS="*"
+        export CORS_ALLOW_ALL_ORIGINS="True"
+        python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
+        BACKEND_PID=$!
+        echo $BACKEND_PID > ../.backend.pid
+        cd "$PROJECT_ROOT"
+        
+        # Wait for backend to be ready again
+        sleep 3
+        if ! check_port $BACKEND_PORT; then
+            print_warning "Backend restart may have failed, but continuing..."
+        else
+            print_success "Backend restarted with CSRF settings"
+        fi
     fi
     
-    # Start frontend tunnel with a slight delay to avoid conflicts
-    print_info "Starting frontend tunnel..."
-    sleep 2
-    
-    # Try to start frontend tunnel - ngrok free tier may have limitations
-    ngrok http $FRONTEND_PORT --basic-auth="$AUTH_USER:$AUTH_PASS" > .frontend-ngrok.log 2>&1 &
-    FRONTEND_NGROK_PID=$!
-    echo $FRONTEND_NGROK_PID > .frontend-ngrok.pid
-    
-    # Wait for frontend tunnel to be ready
-    sleep 8
-    
-    # Function to extract URL from ngrok log
-    extract_url_from_log() {
-        local log_file=$1
-        if [ -f "$log_file" ]; then
-            # Try to find URL in log (ngrok prints it in various formats)
-            local url=$(grep -oP 'https://[a-z0-9-]+\.ngrok-free\.dev' "$log_file" 2>/dev/null | head -1 || echo "")
-            if [ -z "$url" ]; then
-                # Try alternative format
-                url=$(grep -oP 'https://[a-z0-9-]+\.ngrok\.io' "$log_file" 2>/dev/null | head -1 || echo "")
-            fi
-            if [ -z "$url" ]; then
-                # Try to find in "Forwarding" line
-                url=$(grep -i "forwarding" "$log_file" 2>/dev/null | grep -oP 'https://[^\s]+' | head -1 || echo "")
-            fi
-            echo "$url"
-        fi
-    }
-    
-    # Check if frontend tunnel started successfully
+    # Frontend tunnel is already started and URL extracted above
+    # Just verify it's still running and update frontend API URL
     if ! kill -0 $FRONTEND_NGROK_PID 2>/dev/null; then
         print_warning "Frontend tunnel process ended. Checking logs for URL..."
         
