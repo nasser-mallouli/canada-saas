@@ -16,8 +16,9 @@ NC='\033[0m'
 # Configuration
 FRONTEND_PORT=5173
 BACKEND_PORT=8001
+# Default credentials (password must be 8-128 characters for ngrok)
 AUTH_USER="${EXPOSE_AUTH_USER:-demo}"
-AUTH_PASS="${EXPOSE_AUTH_PASS:-demo123}"
+AUTH_PASS="${EXPOSE_AUTH_PASS:-DemoPass123!}"
 URLS_FILE=".public-urls.txt"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -194,6 +195,19 @@ expose_with_ngrok() {
         print_error "ngrok not authenticated!"
         print_info "Run: ngrok config add-authtoken YOUR_TOKEN"
         print_info "Get your token from: https://dashboard.ngrok.com/get-started/your-authtoken"
+        return 1
+    fi
+    
+    # Validate password length (ngrok requires 8-128 characters)
+    local pass_len=${#AUTH_PASS}
+    if [ $pass_len -lt 8 ] || [ $pass_len -gt 128 ]; then
+        print_error "Password must be between 8 and 128 characters (current: $pass_len characters)"
+        print_info "Current password: $AUTH_PASS"
+        print_info ""
+        print_info "Please set a valid password:"
+        print_info "  export EXPOSE_AUTH_PASS='YourPassword123!'"
+        print_info ""
+        print_info "Or use the default password (DemoPass123!) by not setting EXPOSE_AUTH_PASS"
         return 1
     fi
     

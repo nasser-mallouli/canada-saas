@@ -60,8 +60,8 @@ This starts everything and exposes it publicly.
 Set custom username and password:
 
 ```bash
-export EXPOSE_AUTH_USER=myuser
-export EXPOSE_AUTH_PASS=mypassword
+export EXPOSE_AUTH_USER=akramApp
+export EXPOSE_AUTH_PASS=akramApp@24Long  # Must be 8-128 characters
 ./start-and-expose.sh
 ```
 
@@ -81,13 +81,17 @@ cd .. && npm run dev &
 ## 🔐 Default Credentials
 
 - **Username:** `demo`
-- **Password:** `demo123`
+- **Password:** `DemoPass123!` (8+ characters required by ngrok)
+
+**Important:** ngrok requires passwords to be between 8 and 128 characters.
 
 You can change these by setting environment variables:
 ```bash
 export EXPOSE_AUTH_USER=yourusername
-export EXPOSE_AUTH_PASS=yourpassword
+export EXPOSE_AUTH_PASS=yourpassword123  # Must be 8-128 characters
 ```
+
+**Note:** If your password is less than 8 characters, the script will show an error and suggest using a longer password.
 
 ## 📍 Access URLs
 

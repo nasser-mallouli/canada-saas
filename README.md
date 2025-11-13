@@ -193,12 +193,14 @@ This will:
 ### Default Credentials
 
 - **Username:** `demo`
-- **Password:** `demo123`
+- **Password:** `DemoPass123!` (8+ characters required by ngrok)
+
+**Important:** ngrok requires passwords to be between 8 and 128 characters.
 
 Customize with environment variables:
 ```bash
 export EXPOSE_AUTH_USER=myuser
-export EXPOSE_AUTH_PASS=mypassword
+export EXPOSE_AUTH_PASS=mypassword123  # Must be 8-128 characters
 ./start-and-expose.sh
 ```
 
