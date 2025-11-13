@@ -134,6 +134,19 @@ if not CORS_ALLOW_ALL_ORIGINS:
 
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF settings - allow ngrok domains for public exposure
+CSRF_TRUSTED_ORIGINS_ENV = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if CSRF_TRUSTED_ORIGINS_ENV:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS_ENV.split(',') if origin.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://localhost:8001']
+
+# If CORS_ALLOW_ALL_ORIGINS is enabled, also allow ngrok domains for CSRF
+if CORS_ALLOW_ALL_ORIGINS:
+    # Add common ngrok patterns (Django doesn't support wildcards, so we'll handle this differently)
+    # We'll add specific domains via environment variable
+    pass
+
 # JWT Settings
 from datetime import timedelta
 

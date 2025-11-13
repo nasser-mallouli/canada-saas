@@ -283,9 +283,43 @@ expose_with_ngrok() {
     
     print_success "Backend tunnel: $BACKEND_URL"
     
-    # Extract domain from backend URL to add to ALLOWED_HOSTS
+    # Extract domain from backend URL to add to ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
     local backend_domain=$(echo "$BACKEND_URL" | sed 's|https\?://||' | sed 's|/.*||')
-    print_info "Adding ngrok domain to ALLOWED_HOSTS: $backend_domain"
+    print_info "Adding ngrok domain to CSRF_TRUSTED_ORIGINS: $backend_domain"
+    
+    # Add to CSRF_TRUSTED_ORIGINS (needed for admin panel and forms)
+    # Note: We need to restart the backend for this to take effect
+    export CSRF_TRUSTED_ORIGINS="$BACKEND_URL,https://$backend_domain"
+    
+    # Restart backend with CSRF_TRUSTED_ORIGINS set
+    print_info "Restarting backend to apply CSRF_TRUSTED_ORIGINS..."
+    if [ -f ".backend.pid" ]; then
+        local old_backend_pid=$(cat .backend.pid 2>/dev/null || echo "")
+        if [ -n "$old_backend_pid" ]; then
+            kill $old_backend_pid 2>/dev/null || true
+            sleep 2
+        fi
+    fi
+    
+    # Restart backend with updated environment
+    cd "$PROJECT_ROOT/backend"
+    if [ -d "venv" ]; then
+        source venv/bin/activate
+    fi
+    export ALLOWED_HOSTS="*"
+    export CORS_ALLOW_ALL_ORIGINS="True"
+    python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo $BACKEND_PID > ../.backend.pid
+    cd "$PROJECT_ROOT"
+    
+    # Wait for backend to be ready again
+    sleep 3
+    if ! check_port $BACKEND_PORT; then
+        print_warning "Backend restart may have failed, but continuing..."
+    else
+        print_success "Backend restarted with CSRF settings"
+    fi
     
     # Start frontend tunnel with a slight delay to avoid conflicts
     print_info "Starting frontend tunnel..."
