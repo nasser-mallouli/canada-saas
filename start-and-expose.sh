@@ -70,9 +70,19 @@ start_backend() {
     
     if check_port $BACKEND_PORT; then
         print_warning "Backend already running on port $BACKEND_PORT"
-        print_info "Note: If you see ALLOWED_HOSTS errors, restart the backend with:"
-        print_info "  kill \$(cat .backend.pid) && ./start-and-expose.sh"
-        return 0
+        print_info "Restarting backend to apply ALLOWED_HOSTS settings for public exposure..."
+        
+        # Kill existing backend
+        if [ -f ".backend.pid" ]; then
+            local old_pid=$(cat .backend.pid 2>/dev/null || echo "")
+            if [ -n "$old_pid" ]; then
+                kill $old_pid 2>/dev/null || true
+                sleep 2
+            fi
+        fi
+        # Also try to kill by port
+        pkill -f "manage.py runserver.*$BACKEND_PORT" 2>/dev/null || true
+        sleep 1
     fi
     
     cd "$PROJECT_ROOT/backend"
@@ -82,8 +92,13 @@ start_backend() {
         # Set environment variables for public exposure
         export ALLOWED_HOSTS="*"
         export CORS_ALLOWED_ORIGINS="*"
-        # Start backend in background using the existing script
-        bash start.sh > ../.backend.log 2>&1 &
+        # Modify start.sh to run in background and on correct port
+        # We'll run manage.py directly to have better control
+        if [ -d "venv" ]; then
+            source venv/bin/activate
+        fi
+        # Make sure we're using the venv python
+        python manage.py runserver 0.0.0.0:$BACKEND_PORT > ../.backend.log 2>&1 &
         BACKEND_PID=$!
         echo $BACKEND_PID > ../.backend.pid
     else
