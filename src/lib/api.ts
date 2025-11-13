@@ -9,10 +9,43 @@ export function getApiUrl(): string {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
-    const port = '8001';
     
-    // If accessing via network IP or domain (not localhost), use same hostname for API
+    // Cloudflare Tunnel domains don't support port numbers
+    // Check if we're on a Cloudflare domain
+    if (hostname.includes('.trycloudflare.com')) {
+      // For Cloudflare Tunnel, we need a separate tunnel for backend
+      // Try to use a subdomain or check localStorage for backend URL
+      const storedBackendUrl = localStorage.getItem('backend_api_url');
+      if (storedBackendUrl) {
+        return storedBackendUrl;
+      }
+      
+      // If no stored URL, try using the same domain with /api path
+      // (This requires Cloudflare Tunnel to route /api/* to backend)
+      // For now, fall back to trying a subdomain pattern
+      // Note: This won't work unless backend is also exposed via Cloudflare
+      console.warn('Cloudflare Tunnel detected but backend URL not configured. Please expose backend via Cloudflare Tunnel or set VITE_API_URL environment variable.');
+      
+      // Try to construct backend URL (this may not work if backend isn't exposed)
+      // User needs to expose backend separately or use environment variable
+      return `${protocol}//${hostname.replace(/^([^.]+)/, '$1-backend')}`;
+    }
+    
+    // Localtunnel domains
+    if (hostname.includes('.loca.lt')) {
+      // Localtunnel also doesn't support ports, need separate tunnel
+      const storedBackendUrl = localStorage.getItem('backend_api_url');
+      if (storedBackendUrl) {
+        return storedBackendUrl;
+      }
+      // Fallback: try to use same pattern (won't work unless backend is exposed)
+      console.warn('Localtunnel detected but backend URL not configured. Please expose backend via Localtunnel or set VITE_API_URL environment variable.');
+      return `${protocol}//${hostname}`;
+    }
+    
+    // For other domains (network IPs, ngrok, etc.), use port-based approach
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      const port = '8001';
       // Use same protocol and hostname, but port 8001 for backend
       return `${protocol}//${hostname}:${port}`;
     }
