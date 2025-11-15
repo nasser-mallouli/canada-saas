@@ -217,6 +217,7 @@ extract_cloudflare_url() {
 start_cloudflare_tunnel() {
     local label=$1
     local port=$2
+    local result_var=${3:-}
     local log_file="$LOG_DIR/${label}-cloudflare.log"
     local pid_file="$PROJECT_ROOT/.${label}-cloudflare.pid"
 
@@ -236,7 +237,12 @@ start_cloudflare_tunnel() {
     fi
 
     print_success "$label tunnel ready: $url"
-    echo "$url"
+
+    if [ -n "$result_var" ]; then
+        printf -v "$result_var" '%s' "$url"
+    else
+        echo "$url"
+    fi
 }
 
 update_frontend_env() {
@@ -302,7 +308,7 @@ main() {
     launch_backend
 
     # Backend tunnel + API URL
-    BACKEND_URL=$(start_cloudflare_tunnel "backend" "$BACKEND_PORT")
+    start_cloudflare_tunnel "backend" "$BACKEND_PORT" BACKEND_URL
     update_frontend_env "$BACKEND_URL"
 
     # Frontend dependencies & server
@@ -310,7 +316,7 @@ main() {
     launch_frontend
 
     # Frontend tunnel
-    FRONTEND_URL=$(start_cloudflare_tunnel "frontend" "$FRONTEND_PORT")
+    start_cloudflare_tunnel "frontend" "$FRONTEND_PORT" FRONTEND_URL
 
     # Restart backend with CSRF settings that trust both domains
     local csrf="$BACKEND_URL"
